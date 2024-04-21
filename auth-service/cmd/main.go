@@ -10,13 +10,20 @@ import (
 )
 
 func main() {
+	svc, err := auth.NewAuthService()
+	if err != nil {
+		log.Fatalf("failed to create auth service: %v", err)
+	}
+
+	s := grpc.NewServer()
+	auth_pb.RegisterAuthServiceServer(s, svc)
+
 	lis, err := net.Listen("tcp", ":50051")
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
 	log.Printf("listening on %s", lis.Addr().String())
-	s := grpc.NewServer()
-	auth_pb.RegisterAuthServiceServer(s, auth.NewAuthService())
+
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
