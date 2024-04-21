@@ -14,6 +14,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
+	log.Printf("listening on %s", lis.Addr().String())
 	s := grpc.NewServer()
 	auth_pb.RegisterAuthServiceServer(s, auth.NewAuthService())
 	if err := s.Serve(lis); err != nil {

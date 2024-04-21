@@ -1,0 +1,14 @@
+apiVersion: skaffold/v4beta9
+kind: Config
+metadata:
+  name: yap
+build:
+  artifacts:
+    - image: auth-service
+      context: .
+      docker:
+        dockerfile: auth-service/Dockerfile
+manifests:
+  rawYaml:
+    - auth-service/k8s/deployment.yaml
+    - auth-service/k8s/service.yaml
