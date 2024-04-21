@@ -81,13 +81,13 @@ func TestAuthService_Register(t *testing.T) {
 	}
 }
 
-// TestLoginAndValidate that users are able to log in and receive valid access and refresh tokens
-func TestLoginAndValidate(t *testing.T) {
+// TestAuthenticationLifecycle asserts that users can login with their credentials & validate + refresh their access token
+func TestAuthenticationLifecycle(t *testing.T) {
 	ctx, connStr := setupTestDB(t)
 	authSvc, err := NewAuthService(connStr)
 	assert.NoError(t, err)
 
-	// Register a new user
+	// (1) Register a new user
 	c, err := authSvc.Register(ctx, &auth.RegisterRequest{
 		Username: "Henry",
 		Password: "Password123",
@@ -97,7 +97,7 @@ func TestLoginAndValidate(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, c)
 
-	// Attempt to log in with the same credentials
+	// (2) Attempt to log in with the same credentials
 	loginResponse, err := authSvc.Login(ctx, &auth.LoginRequest{
 		Username: "Henry",
 		Password: "Password123",
@@ -114,4 +114,41 @@ func TestLoginAndValidate(t *testing.T) {
 	// The refresh token should be a valid UUID
 	err = uuid.Validate(loginResponse.RefreshToken)
 	assert.NoError(t, err)
+
+	// (3) It should be possible to validate the access token
+	validateResponse1, err := authSvc.Validate(ctx, &auth.ValidateRequest{
+		AccessToken: loginResponse.AccessToken,
+	})
+
+	// The validation should be successful
+	assert.NoError(t, err)
+
+	// The user ID should be the same as the one used to log in
+	assert.Equal(t, "Henry", validateResponse1.Username)
+
+	// (4) Test the refresh token
+	refreshResponse, err := authSvc.Refresh(ctx, &auth.RefreshRequest{
+		RefreshToken: loginResponse.RefreshToken,
+	})
+
+	// The refresh should be successful
+	assert.NoError(t, err)
+
+	// The access token should be a valid UUID
+	err = uuid.Validate(refreshResponse.AccessToken)
+	assert.NoError(t, err)
+
+	// The new access token (from the refresh) should be different from the old access token
+	assert.NotEqual(t, loginResponse.AccessToken, refreshResponse.AccessToken)
+
+	// (5) It should be possible to validate the new access token
+	validateResponse2, err := authSvc.Validate(ctx, &auth.ValidateRequest{
+		AccessToken: refreshResponse.AccessToken,
+	})
+
+	// The validation should be successful
+	assert.NoError(t, err)
+
+	// The user ID should be the same as the one used to log in
+	assert.Equal(t, "Henry", validateResponse2.Username)
 }
