@@ -2,93 +2,72 @@ package auth
 
 import (
 	"context"
-	"database/sql"
-	"fmt"
+	"github.com/google/uuid"
 	_ "github.com/lib/pq"
+	"github.com/stretchr/testify/assert"
 	"github.com/testcontainers/testcontainers-go"
+	"github.com/testcontainers/testcontainers-go/modules/postgres"
 	"github.com/testcontainers/testcontainers-go/wait"
 	auth "github.com/wcygan/yap/generated/go/auth/v1"
+	"path/filepath"
 	"testing"
+	"time"
 )
 
-func setupTestDatabase(t *testing.T) *sql.DB {
+func TestCustomerRepository(t *testing.T) {
 	ctx := context.Background()
-	req := testcontainers.ContainerRequest{
-		Image:        "postgres:15.3",
-		ExposedPorts: []string{"5432/tcp"},
-		Env: map[string]string{
-			"POSTGRES_PASSWORD": "password",
-			"POSTGRES_DB":       "testdb",
-		},
-		WaitingFor: wait.ForLog("database system is ready to accept connections"),
-	}
 
-	container, err := testcontainers.GenericContainer(ctx, testcontainers.GenericContainerRequest{
-		ContainerRequest: req,
-		Started:          true,
-	})
+	pgContainer, err := postgres.RunContainer(ctx,
+		testcontainers.WithImage("postgres:15.3-alpine"),
+		postgres.WithInitScripts(filepath.Join("..", "..", "testdata", "init-auth-db.sql")),
+		postgres.WithDatabase("test-db"),
+		postgres.WithUsername("postgres"),
+		postgres.WithPassword("postgres"),
+		testcontainers.WithWaitStrategy(
+			wait.ForLog("database system is ready to accept connections").
+				WithOccurrence(2).WithStartupTimeout(5*time.Second)),
+	)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	defer func() {
-		if err := container.Terminate(ctx); err != nil {
-			t.Fatalf("failed to terminate container: %v", err)
+	t.Cleanup(func() {
+		if err := pgContainer.Terminate(ctx); err != nil {
+			t.Fatalf("failed to terminate pgContainer: %s", err)
 		}
-	}()
-
-	host, err := container.Host(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	port, err := container.MappedPort(ctx, "5432")
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	connStr := fmt.Sprintf("postgres://postgres:password@%s:%s/testdb?sslmode=disable", host, port.Port())
-
-	db, err := sql.Open("postgres", connStr)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	return db
-}
-
-func TestRegister(t *testing.T) {
-	db := setupTestDatabase(t)
-	defer db.Close()
-
-	s := &AuthService{db: db}
-
-	// Create the necessary tables for testing
-	_, err := db.Exec(`
-        CREATE TABLE IF NOT EXISTS users (
-            id SERIAL PRIMARY KEY,
-            username VARCHAR(255) UNIQUE NOT NULL,
-            password VARCHAR(255) NOT NULL
-        );
-
-        CREATE TABLE IF NOT EXISTS tokens (
-            user_id INTEGER REFERENCES users(id),
-            access_token VARCHAR(255) UNIQUE NOT NULL,
-            refresh_token VARCHAR(255) UNIQUE NOT NULL,
-            expires_at TIMESTAMP NOT NULL
-        );
-    `)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	// Test the Register method
-	_, err = s.Register(context.Background(), &auth.RegisterRequest{
-		Username: "testuser",
-		Password: "testpassword",
 	})
 
-	if err != nil {
-		t.Fatal(err)
-	}
+	connStr, err := pgContainer.ConnectionString(ctx, "sslmode=disable")
+	assert.NoError(t, err)
+
+	authSvc, err := NewAuthService(connStr)
+	assert.NoError(t, err)
+
+	// Register a new user
+	c, err := authSvc.Register(ctx, &auth.RegisterRequest{
+		Username: "Henry",
+		Password: "Password123",
+	})
+
+	// The registration should be successful
+	assert.NoError(t, err)
+	assert.NotNil(t, c)
+
+	// Attempt to log in with the same credentials
+	loginResponse, err := authSvc.Login(ctx, &auth.LoginRequest{
+		Username: "Henry",
+		Password: "Password123",
+	})
+
+	// The login should be successful
+	assert.NoError(t, err)
+	assert.NotNil(t, loginResponse)
+
+	// The access token should be a valid UUID
+	err = uuid.Validate(loginResponse.AccessToken)
+	assert.NoError(t, err)
+
+	// The refresh token should be a valid UUID
+	err = uuid.Validate(loginResponse.RefreshToken)
+	assert.NoError(t, err)
 }

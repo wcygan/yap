@@ -4,10 +4,10 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"time"
-
 	"github.com/google/uuid"
+	_ "github.com/lib/pq"
 	auth "github.com/wcygan/yap/generated/go/auth/v1"
+	"time"
 )
 
 var errTokenExpired = errors.New("token has expired")
@@ -18,8 +18,8 @@ type AuthService struct {
 	db *sql.DB
 }
 
-func NewAuthService() (*AuthService, error) {
-	db, err := sql.Open("postgres", "postgres://postgres:your-password-here@postgres:5432/postgres?sslmode=disable")
+func NewAuthService(connStr string) (*AuthService, error) {
+	db, err := sql.Open("postgres", connStr)
 	if err != nil {
 		return nil, err
 	}
