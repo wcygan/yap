@@ -1,14 +1,33 @@
 apiVersion: skaffold/v4beta9
 kind: Config
 metadata:
-  name: yap
+  name: postgres-configurations
+manifests:
+  rawYaml:
+    - auth-db/k8s/pg-init.yaml
+    - auth-db/k8s/deployment.yaml
+    - auth-db/k8s/service.yaml
+deploy:
+  kubectl: {}
+---
+apiVersion: skaffold/v4beta9
+kind: Config
+metadata:
+  name: auth-service
+requires:
+  - configs:
+      - postgres-configurations
+manifests:
+  rawYaml:
+    - auth-service/k8s/deployment.yaml
+    - auth-service/k8s/service.yaml
 build:
+  local:
+    concurrency: 0
   artifacts:
     - image: auth-service
       context: .
       docker:
         dockerfile: auth-service/Dockerfile
-manifests:
-  rawYaml:
-    - auth-service/k8s/deployment.yaml
-    - auth-service/k8s/service.yaml
+deploy:
+  kubectl: {}
