@@ -2,10 +2,11 @@
 
 ## Architecture
 - Microservices architecture with services for:
-  - Authentication (auth service)
-  - Messaging (chat service) 
-  - Group management (group service)
-- gRPC for inter-service communication
+  - API (yap-api)
+  - Authentication (auth-service)
+  - Messaging (chat-service) 
+  - Group management (group-service)
+- gRPC for inter-service communication and client-api communication
 - buf for protobuf code generation
 - PostgreSQL database for persistence
 - Kubernetes for deployment and scaling

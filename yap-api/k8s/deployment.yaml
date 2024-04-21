@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: yap-api 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: yap-api
+  template:
+    metadata:
+      labels:
+        app: yap-api
+    spec:
+      containers:
+        - name: yap-api
+          image: yap-api
+          ports:
+            - containerPort: 50050

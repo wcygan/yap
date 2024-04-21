@@ -31,3 +31,25 @@ build:
         dockerfile: auth-service/Dockerfile
 deploy:
   kubectl: {}
+---
+apiVersion: skaffold/v4beta9
+kind: Config
+metadata:
+  name: yap-api
+requires:
+  - configs:
+      - auth-service
+manifests:
+  rawYaml:
+    - yap-api/k8s/deployment.yaml 
+    - yap-api/k8s/service.yaml
+build:
+  local:
+    concurrency: 0
+  artifacts:
+    - image: yap-api
+      context: .
+      docker:
+        dockerfile: yap-api/Dockerfile
+deploy:
+  kubectl: {}
