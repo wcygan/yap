@@ -14,7 +14,7 @@ import (
 	"time"
 )
 
-func TestCustomerRepository(t *testing.T) {
+func setupTestDB(t *testing.T) (context.Context, string) {
 	ctx := context.Background()
 
 	pgContainer, err := postgres.RunContainer(ctx,
@@ -31,15 +31,59 @@ func TestCustomerRepository(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	connStr, err := pgContainer.ConnectionString(ctx, "sslmode=disable")
+	assert.NoError(t, err)
+
 	t.Cleanup(func() {
 		if err := pgContainer.Terminate(ctx); err != nil {
 			t.Fatalf("failed to terminate pgContainer: %s", err)
 		}
 	})
 
-	connStr, err := pgContainer.ConnectionString(ctx, "sslmode=disable")
+	return ctx, connStr
+}
+
+// TestAuthService_Register tests that users are only able to register with unique usernames
+func TestAuthService_Register(t *testing.T) {
+	ctx, connStr := setupTestDB(t)
+	authSvc, err := NewAuthService(connStr)
 	assert.NoError(t, err)
 
+	tests := []struct {
+		name    string
+		req     *auth.RegisterRequest
+		wantErr bool
+	}{
+		{
+			name: "FirstValidUser",
+			req:  &auth.RegisterRequest{Username: "test1", Password: "password"},
+		},
+		{
+			name:    "DuplicateUser",
+			req:     &auth.RegisterRequest{Username: "test1", Password: "password"},
+			wantErr: true,
+		},
+		{
+			name: "SecondValidUser",
+			req:  &auth.RegisterRequest{Username: "test2", Password: "password"},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			resp, err := authSvc.Register(ctx, tt.req)
+			assert.Equal(t, tt.wantErr, err != nil)
+			if !tt.wantErr {
+				assert.NotEmpty(t, resp.AccessToken)
+				assert.NotEmpty(t, resp.RefreshToken)
+			}
+		})
+	}
+}
+
+// TestLoginAndValidate that users are able to log in and receive valid access and refresh tokens
+func TestLoginAndValidate(t *testing.T) {
+	ctx, connStr := setupTestDB(t)
 	authSvc, err := NewAuthService(connStr)
 	assert.NoError(t, err)
 
