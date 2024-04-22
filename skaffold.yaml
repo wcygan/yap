@@ -1,22 +1,6 @@
 apiVersion: skaffold/v4beta9
 kind: Config
 metadata:
-  name: ingress-configurations
-deploy:
-  helm:
-    releases:
-      - name: ingress-nginx
-        repo: https://kubernetes.github.io/ingress-nginx
-        remoteChart: ingress-nginx
-        version: 4.0.6
-        setValueTemplates:
-          controller.service.type: LoadBalancer
-        wait: true
-
----
-apiVersion: skaffold/v4beta9
-kind: Config
-metadata:
   name: postgres-configurations
 manifests:
   rawYaml:
@@ -71,3 +55,9 @@ build:
         dockerfile: yap-api/Dockerfile
 deploy:
   kubectl: {}
+portForward:
+  # This port-forwarding enables clients to connect to the yap-api service
+  - resourceType: deployment
+    resourceName: yap-api
+    port: 50050
+    localPort: 50050
