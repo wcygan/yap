@@ -39,12 +39,10 @@ metadata:
 requires:
   - configs:
       - auth-service
-      - ingress-configurations
 manifests:
   rawYaml:
     - yap-api/k8s/deployment.yaml 
     - yap-api/k8s/service.yaml
-    - yap-api/k8s/ingress.yaml
 build:
   local:
     concurrency: 0
