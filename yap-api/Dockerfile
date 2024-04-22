@@ -40,3 +40,5 @@ WORKDIR /app
 
 # Copy the compiled binary from the third stage
 COPY --from=gobuild /app/build/yap-api ./yap-api
+
+CMD ["./yap-api"]

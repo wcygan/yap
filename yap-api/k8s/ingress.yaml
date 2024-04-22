@@ -1,0 +1,18 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress  
+metadata:
+  name: yap-api-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: "GRPC"
+spec:
+  rules:
+  - host: api.yap.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: yap-api
+            port: 
+              number: 50050

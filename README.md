@@ -1,5 +1,13 @@
 # Real-time Chat Application
 
+## Quick Start
+
+Install [Minikube](https://minikube.sigs.k8s.io/docs/start/) and [Skaffold](https://skaffold.dev/docs/install/#standalone-binary), then run:
+
+```
+minikube start && skaffold dev
+```
+
 ## Architecture
 - Microservices architecture with services for:
   - API (yap-api)
