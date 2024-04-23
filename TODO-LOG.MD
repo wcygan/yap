@@ -1,6 +1,7 @@
 Things you need to do...
 
-- Figure out how to connect to the database inside DataGrip
+- Figure out how to connect to the database inside DataGrip / IntelliJ
+- Hash the passwords lol
 - Work on the Chat CLI
   - Add three screens (login, home, chat)
   - Add a way to create a new user
@@ -12,3 +13,5 @@ Things you need to do...
   - Add a way to logout
 - Work on creating chat-service
 - Work on creating group-service
+- Publish CLI binaries to GitHub / Add installation instructions
+- Publish a Docker image of the CLI to Docker Hub
