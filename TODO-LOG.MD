@@ -1,6 +1,5 @@
 Things you need to do...
 
-- Figure out how to connect to the database inside DataGrip / IntelliJ
 - Hash the passwords lol
 - Work on the Chat CLI
   - Add three screens (login, home, chat)
