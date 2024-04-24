@@ -74,10 +74,10 @@ func (m Model) Init() tea.Cmd {
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
+		m.err = nil
 		switch msg.Type {
 		case tea.KeyCtrlC, tea.KeyEsc:
 			return m, tea.Quit
-
 		case tea.KeyCtrlR:
 			m.cursorMode++
 			if m.cursorMode > cursor.CursorHide {
@@ -92,15 +92,18 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case tea.KeyTab, tea.KeyShiftTab, tea.KeyEnter, tea.KeyUp, tea.KeyDown:
 			s := msg.String()
 
-			if s == "enter" && m.focusIndex == len(m.inputs) {
-				// Login button pressed
-				// TODO: Perform login action
-				return m, tea.Quit
-			} else if s == "enter" && m.focusIndex == len(m.inputs)+1 {
-				// Create account button pressed
-				// TODO: Perform create account action
-				return m, tea.Quit
-			}
+            if s == "enter" && m.focusIndex == len(m.inputs) {
+                // Login button pressed
+                // TODO: Perform login action
+                m.err = fmt.Errorf("incorrect login credentials")
+                return m, nil
+            } else if s == "enter" && m.focusIndex == len(m.inputs)+1 {
+                // Create account button pressed
+                // TODO: Perform create account action
+                // Stub the API call and assume an error occurred
+                m.err = fmt.Errorf("account already exists")
+                return m, nil
+            }
 
 			if s == "up" || s == "shift+tab" {
 				m.focusIndex--
@@ -174,9 +177,11 @@ func (m Model) View() string {
 	b.WriteString(lipgloss.JoinHorizontal(lipgloss.Top, m.loginButton, m.createButton))
 
 	b.WriteString("\n\n")
-	b.WriteString(blurredStyle.Render("cursor mode is "))
+	b.WriteString(blurredStyle.Render("1. navigate with tab, shift+tab, and enter"))
+	b.WriteString(blurredStyle.Render("\n2. cursor mode is "))
 	b.WriteString(cursorModeHelpStyle.Render(m.cursorMode.String()))
-	b.WriteString(blurredStyle.Render(" (ctrl+r to change style)"))
+	b.WriteString(blurredStyle.Render(" (ctrl+r to change style)\n"))
+	
 
 	if m.err != nil {
 		b.WriteString("\n\n")
