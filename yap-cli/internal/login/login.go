@@ -2,6 +2,8 @@ package login
 
 import (
 	"fmt"
+	"google.golang.org/grpc"
+	"log"
 	"strings"
 
 	"github.com/charmbracelet/bubbles/cursor"
@@ -9,7 +11,9 @@ import (
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	auth "github.com/wcygan/yap/generated/go/auth/v1"
 	"github.com/wcygan/yap/yap-cli/internal/context"
+	ctx "golang.org/x/net/context"
 )
 
 var (
@@ -74,10 +78,10 @@ func (m Model) Init() tea.Cmd {
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
+		// Reset error message
 		m.err = nil
+
 		switch msg.Type {
-		case tea.KeyCtrlC, tea.KeyEsc:
-			return m, tea.Quit
 		case tea.KeyCtrlR:
 			m.cursorMode++
 			if m.cursorMode > cursor.CursorHide {
@@ -92,18 +96,61 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case tea.KeyTab, tea.KeyShiftTab, tea.KeyEnter, tea.KeyUp, tea.KeyDown:
 			s := msg.String()
 
-            if s == "enter" && m.focusIndex == len(m.inputs) {
-                // Login button pressed
-                // TODO: Perform login action
-                m.err = fmt.Errorf("incorrect login credentials")
-                return m, nil
-            } else if s == "enter" && m.focusIndex == len(m.inputs)+1 {
-                // Create account button pressed
-                // TODO: Perform create account action
-                // Stub the API call and assume an error occurred
-                m.err = fmt.Errorf("account already exists")
-                return m, nil
-            }
+			if s == "enter" && m.focusIndex == len(m.inputs) {
+				// Login button pressed
+				conn, err := grpc.Dial(m.Context.GetHost(), grpc.WithInsecure())
+				defer conn.Close()
+				if err != nil {
+					log.Fatalf("Failed to connect to gRPC server: %v", err)
+				}
+
+				// Create a new AuthServiceClient with the connection
+				client := auth.NewAuthServiceClient(conn)
+				loginResponse, err := client.Login(ctx.Background(), &auth.LoginRequest{
+					Username: m.usernameInput.Value(),
+					Password: m.passwordInput.Value(),
+				})
+				if err != nil {
+					m.err = fmt.Errorf("registration failed: %v", err)
+				} else {
+					loginInfo := &context.LoginInformation{
+						Username:     m.usernameInput.Value(),
+						AccessToken:  loginResponse.AccessToken,
+						RefreshToken: loginResponse.RefreshToken,
+					}
+
+					m.Context.SetLoginInformation(loginInfo)
+					m.Context.SetCurrentPage(context.HomePage)
+				}
+				return m, nil
+			} else if s == "enter" && m.focusIndex == len(m.inputs)+1 {
+				// Create account button pressed
+				conn, err := grpc.Dial(m.Context.GetHost(), grpc.WithInsecure())
+				defer conn.Close()
+				if err != nil {
+					log.Fatalf("Failed to connect to gRPC server: %v", err)
+				}
+
+				// Create a new AuthServiceClient with the connection
+				client := auth.NewAuthServiceClient(conn)
+				registerResponse, err := client.Register(ctx.Background(), &auth.RegisterRequest{
+					Username: m.usernameInput.Value(),
+					Password: m.passwordInput.Value(),
+				})
+				if err != nil {
+					m.err = fmt.Errorf("registration failed: %v", err)
+				} else {
+					loginInfo := &context.LoginInformation{
+						Username:     m.usernameInput.Value(),
+						AccessToken:  registerResponse.AccessToken,
+						RefreshToken: registerResponse.RefreshToken,
+					}
+
+					m.Context.SetLoginInformation(loginInfo)
+					m.Context.SetCurrentPage(context.HomePage)
+				}
+				return m, nil
+			}
 
 			if s == "up" || s == "shift+tab" {
 				m.focusIndex--
@@ -153,7 +200,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, cmd
 }
 
-func (m *Model) updateInputs(msg tea.Msg) tea.Cmd {
+func (m Model) updateInputs(msg tea.Msg) tea.Cmd {
 	cmds := make([]tea.Cmd, len(m.inputs))
 
 	for i := range m.inputs {
@@ -181,7 +228,6 @@ func (m Model) View() string {
 	b.WriteString(blurredStyle.Render("\n2. cursor mode is "))
 	b.WriteString(cursorModeHelpStyle.Render(m.cursorMode.String()))
 	b.WriteString(blurredStyle.Render(" (ctrl+r to change style)\n"))
-	
 
 	if m.err != nil {
 		b.WriteString("\n\n")

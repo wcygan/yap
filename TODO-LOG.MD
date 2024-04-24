@@ -1,6 +1,7 @@
 Things you need to do...
 
 - Hash the passwords lol
+- FIX BUG where the username and password text inputs aren't being updated!
 - Work on the Chat CLI
   - Add three screens:
     - Login (DONE)
