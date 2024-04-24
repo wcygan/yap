@@ -41,7 +41,7 @@ func InitialModel(ctx *context.Context) Model {
 	taskSpinner := spinner.Model{Spinner: spinner.Dot}
 
 	chatNameInput := textinput.New()
-	chatNameInput.Placeholder = "Chat Name"
+	chatNameInput.Placeholder = "Name of Chat Room"
 	chatNameInput.Focus()
 	chatNameInput.CharLimit = 256
 	chatNameInput.Cursor.Style = cursorStyle
