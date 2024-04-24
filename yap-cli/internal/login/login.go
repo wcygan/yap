@@ -186,6 +186,8 @@ func (m Model) View() string {
 	if m.err != nil {
 		b.WriteString("\n\n")
 		b.WriteString(m.err.Error())
+	} else {
+		b.WriteString("\n\n")
 	}
 
 	return b.String()
