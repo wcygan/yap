@@ -53,6 +53,10 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		homeModel, cmd := m.home.Update(msg)
 		m.home = homeModel.(home.Model)
 		return m, cmd
+	case context.ChatPage:
+		chatModel, cmd := m.chat.Update(msg)
+		m.chat = chatModel.(chat.Model)
+		return m, cmd
 	default:
 		panic("page is not implemented")
 
@@ -66,8 +70,8 @@ func (m Model) View() string {
 		return m.login.View()
 	case context.HomePage:
 		return m.home.View()
-	default:
-		return "Hello, world!"
-		//	no-op until we implement the other pages
+	case context.ChatPage:
+		return m.chat.View()
 	}
+	return ""
 }

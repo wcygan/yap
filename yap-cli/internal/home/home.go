@@ -81,6 +81,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				} else if m.isJoinChatFocused() {
 					// Join chat button pressed
 					// TODO: Implement join chat functionality
+					m.Context.SetCurrentPage(context.ChatPage)
+					return m, nil
 				} else if m.isLogoutFocused() {
 					m.Context.Logout()
 					return m, nil

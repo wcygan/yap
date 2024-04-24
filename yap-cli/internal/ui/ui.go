@@ -10,10 +10,6 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
-type (
-	errMsg error
-)
-
 type model struct {
 	viewport    viewport.Model
 	messages    []string
@@ -80,7 +76,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 
 	// We handle errors just like any other message
-	case errMsg:
+	case error:
 		m.err = msg
 		return m, nil
 	}
