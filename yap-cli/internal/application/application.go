@@ -49,6 +49,10 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		loginModel, cmd := m.login.Update(msg)
 		m.login = loginModel.(login.Model)
 		return m, cmd
+	case context.HomePage:
+		homeModel, cmd := m.home.Update(msg)
+		m.home = homeModel.(home.Model)
+		return m, cmd
 	default:
 		panic("page is not implemented")
 
@@ -60,6 +64,8 @@ func (m Model) View() string {
 	switch m.Context.GetCurrentPage() {
 	case context.LoginPage:
 		return m.login.View()
+	case context.HomePage:
+		return m.home.View()
 	default:
 		return "Hello, world!"
 		//	no-op until we implement the other pages
