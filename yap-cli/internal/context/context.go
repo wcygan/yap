@@ -5,6 +5,7 @@ import "sync"
 // Context contains the shared state of the application
 type Context struct {
 	sync.RWMutex                       // The context is shared, so we need to protect it
+	host             string            // The host server address
 	loginInformation *LoginInformation // The user's login information
 	currentPage      Page              // The current page the user is on
 }
@@ -24,11 +25,18 @@ const (
 	Chat
 )
 
-func InitialContext() *Context {
+func InitialContext(host string) *Context {
 	return &Context{
+		host:             host,  // Set the host server address for gRPC communication
 		loginInformation: nil,   // No login information to start; the user must log in
 		currentPage:      Login, // Start on the login page
 	}
+}
+
+func (c *Context) GetHost() string {
+	c.RLock()
+	defer c.RUnlock()
+	return c.host
 }
 
 func (c *Context) SetCurrentPage(page Page) {

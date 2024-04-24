@@ -19,7 +19,8 @@ var rootCmd = &cobra.Command{
 	Use:   "yap-cli",
 	Short: "Yap with people on the internet!",
 	Run: func(cmd *cobra.Command, args []string) {
-		if _, err := tea.NewProgram(application.InitialModel()).Run(); err != nil {
+		host := cmd.Flag("host").Value.String()
+		if _, err := tea.NewProgram(application.InitialModel(host)).Run(); err != nil {
 			fmt.Printf("could not start program: %s\n", err)
 			os.Exit(1)
 		}
