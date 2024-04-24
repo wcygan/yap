@@ -38,10 +38,6 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.Type {
-		case tea.KeyBackspace:
-			// TODO: remove me; it's just a test
-			m.Context.SetCurrentPage(context.HomePage)
-			return m, nil
 		case tea.KeyCtrlC:
 			return m, tea.Quit
 		}
