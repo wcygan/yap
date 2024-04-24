@@ -38,7 +38,7 @@ kubectl port-forward postgres-69c569c6c9-wj2zx 5432:5432
 Use a Database Driver and a connection string similar to the following: 
 
 ```
-postgres://postgres:your-password-here@postgres:5432/postgres?sslmode=disable
+postgres://postgres:your-password-here@auth-db:5432/postgres?sslmode=disable
 ```
 
 I like [DataGrip](https://www.jetbrains.com/datagrip/) or the [IntelliJ Postgres Driver](https://www.jetbrains.com/help/idea/postgresql.html).

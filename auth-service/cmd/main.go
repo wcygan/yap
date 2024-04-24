@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	svc, err := auth.NewAuthService("postgres://postgres:your-password-here@postgres:5432/postgres?sslmode=disable")
+	svc, err := auth.NewAuthService("postgres://postgres:your-password-here@auth-db:5432/postgres?sslmode=disable")
 	if err != nil {
 		log.Fatalf("failed to create auth service: %v", err)
 	}
