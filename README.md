@@ -5,7 +5,15 @@
 Install [Minikube](https://minikube.sigs.k8s.io/docs/start/) and [Skaffold](https://skaffold.dev/docs/install/#standalone-binary), then run:
 
 ```
-minikube start && skaffold dev
+minikube start
+skaffold dev
+```
+
+Then, in another terminal start the CLI:
+
+```
+cd yap-cli
+go run cmd/main.go
 ```
 
 ## Connecting to PostgreSQL Locally
