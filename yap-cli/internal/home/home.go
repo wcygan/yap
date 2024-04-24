@@ -99,28 +99,24 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.focusIndex = 3
 			}
 
+			m.createButton = blurredCreateButton
+			m.joinButton = blurredJoinButton
+			m.logoutButton = blurredLogoutButton
 			if m.isTextInputFocused() {
 				cmds = append(cmds, m.chatNameInput.Focus())
 				m.chatNameInput.PromptStyle = focusedStyle
 				m.chatNameInput.TextStyle = focusedStyle
-				m.createButton = blurredCreateButton
-				m.joinButton = blurredJoinButton
-				m.logoutButton = blurredLogoutButton
-			} else if m.isCreateChatFocused() {
-				m.chatNameInput.Blur()
-				m.createButton = focusedCreateButton
-				m.joinButton = blurredJoinButton
-				m.logoutButton = blurredLogoutButton
-			} else if m.isJoinChatFocused() {
-				m.chatNameInput.Blur()
-				m.createButton = blurredCreateButton
-				m.joinButton = focusedJoinButton
-				m.logoutButton = blurredLogoutButton
 			} else {
 				m.chatNameInput.Blur()
-				m.createButton = blurredCreateButton
-				m.joinButton = blurredJoinButton
-				m.logoutButton = focusedLogoutButton
+				m.chatNameInput.PromptStyle = noStyle
+				m.chatNameInput.TextStyle = noStyle
+				if m.isCreateChatFocused() {
+					m.createButton = focusedCreateButton
+				} else if m.isJoinChatFocused() {
+					m.joinButton = focusedJoinButton
+				} else {
+					m.logoutButton = focusedLogoutButton
+				}
 			}
 		}
 
