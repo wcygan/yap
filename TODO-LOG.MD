@@ -2,13 +2,17 @@ Things you need to do...
 
 - Hash the passwords lol
 - Work on the Chat CLI
-  - Add three screens (login, home, chat)
-  - Add a way to create a new user
-  - Add a way to login
+  - Add three screens:
+    - Login (DONE)
+    - Home (ask AI to clone it similar to the login page)
+    - Chat (ask AI to integrate the example from https://github.com/charmbracelet/bubbletea/blob/master/examples/chat/main.go with your program)
+  - Add page transitions according to the UI spec
+  - Add a way to create a new user -- API Call
+  - Add a way to login -- API Call
     - Store username & access token in CLI state (model?)
-  - Add a way to create a new chat
-  - Add a way to connect to a chat
-  - Add a way to send and receive messages (grpc streaming)
+  - Add a way to create a new chat -- API Call
+  - Add a way to connect to a chat -- API Call
+  - Add a way to send and receive messages (grpc streaming) -- API Calls
   - Add a way to logout
 - Work on creating chat-service
 - Work on creating group-service
