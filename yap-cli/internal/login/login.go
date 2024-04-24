@@ -31,15 +31,13 @@ var (
 
 type Model struct {
 	*context.Context
-	taskSpinner   spinner.Model
-	usernameInput textinput.Model
-	passwordInput textinput.Model
-	inputs        []textinput.Model
-	focusIndex    int
-	loginButton   string
-	createButton  string
-	err           error
-	cursorMode    cursor.Mode
+	taskSpinner  spinner.Model
+	inputs       []textinput.Model
+	focusIndex   int
+	loginButton  string
+	createButton string
+	err          error
+	cursorMode   cursor.Mode
 }
 
 func InitialModel(ctx *context.Context) Model {
@@ -59,16 +57,22 @@ func InitialModel(ctx *context.Context) Model {
 	passwordInput.Cursor.Style = cursorStyle
 
 	return Model{
-		Context:       ctx,
-		taskSpinner:   taskSpinner,
-		usernameInput: usernameInput,
-		passwordInput: passwordInput,
-		inputs:        []textinput.Model{usernameInput, passwordInput},
-		focusIndex:    0,
-		loginButton:   blurredButton,
-		createButton:  blurredCreateButton,
-		cursorMode:    cursor.CursorBlink,
+		Context:      ctx,
+		taskSpinner:  taskSpinner,
+		inputs:       []textinput.Model{usernameInput, passwordInput},
+		focusIndex:   0,
+		loginButton:  blurredButton,
+		createButton: blurredCreateButton,
+		cursorMode:   cursor.CursorBlink,
 	}
+}
+
+func (m Model) passwordInput() textinput.Model {
+	return m.inputs[1]
+}
+
+func (m Model) usernameInput() textinput.Model {
+	return m.inputs[0]
 }
 
 func (m Model) Init() tea.Cmd {
@@ -106,15 +110,16 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 				// Create a new AuthServiceClient with the connection
 				client := auth.NewAuthServiceClient(conn)
-				loginResponse, err := client.Login(ctx.Background(), &auth.LoginRequest{
-					Username: m.usernameInput.Value(),
-					Password: m.passwordInput.Value(),
-				})
+				req := &auth.LoginRequest{
+					Username: m.usernameInput().Value(),
+					Password: m.passwordInput().Value(),
+				}
+				loginResponse, err := client.Login(ctx.Background(), req)
 				if err != nil {
 					m.err = fmt.Errorf("registration failed: %v", err)
 				} else {
 					loginInfo := &context.LoginInformation{
-						Username:     m.usernameInput.Value(),
+						Username:     m.usernameInput().Value(),
 						AccessToken:  loginResponse.AccessToken,
 						RefreshToken: loginResponse.RefreshToken,
 					}
@@ -133,15 +138,16 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 				// Create a new AuthServiceClient with the connection
 				client := auth.NewAuthServiceClient(conn)
-				registerResponse, err := client.Register(ctx.Background(), &auth.RegisterRequest{
-					Username: m.usernameInput.Value(),
-					Password: m.passwordInput.Value(),
-				})
+				req := &auth.RegisterRequest{
+					Username: m.usernameInput().Value(),
+					Password: m.passwordInput().Value(),
+				}
+				registerResponse, err := client.Register(ctx.Background(), req)
 				if err != nil {
 					m.err = fmt.Errorf("registration failed: %v", err)
 				} else {
 					loginInfo := &context.LoginInformation{
-						Username:     m.usernameInput.Value(),
+						Username:     m.usernameInput().Value(),
 						AccessToken:  registerResponse.AccessToken,
 						RefreshToken: registerResponse.RefreshToken,
 					}
@@ -172,11 +178,13 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					m.inputs[i].PromptStyle = focusedStyle
 					m.inputs[i].TextStyle = focusedStyle
 					continue
+				} else {
+					// Remove focused state
+					m.inputs[i].Blur()
+					m.inputs[i].PromptStyle = noStyle
+					m.inputs[i].TextStyle = noStyle
 				}
-				// Remove focused state
-				m.inputs[i].Blur()
-				m.inputs[i].PromptStyle = noStyle
-				m.inputs[i].TextStyle = noStyle
+
 			}
 
 			if m.focusIndex == len(m.inputs) {
@@ -200,9 +208,11 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, cmd
 }
 
-func (m Model) updateInputs(msg tea.Msg) tea.Cmd {
+func (m *Model) updateInputs(msg tea.Msg) tea.Cmd {
 	cmds := make([]tea.Cmd, len(m.inputs))
 
+	// Only text inputs with Focus() set will respond, so it's safe to simply
+	// update all of them here without any further logic.
 	for i := range m.inputs {
 		m.inputs[i], cmds[i] = m.inputs[i].Update(msg)
 	}
