@@ -14,3 +14,4 @@ Things you need to do...
 - Work on creating group-service
 - Publish CLI binaries to GitHub / Add installation instructions
 - Publish a Docker image of the CLI to Docker Hub
+- Figure out how to use ingress for yap-api instead of port-forwarding
