@@ -14,6 +14,7 @@ Things you need to do...
   - Add a way to connect to a chat -- API Call
   - Add a way to send and receive messages (grpc streaming) -- API Calls
   - Add a way to logout
+- When a user logs in, have a random color assigned to their login information... Whenever they send a chat message, send the color too. This way, the chat messages will be colored according to the user.
 - Work on creating chat-service
 - Work on creating group-service
 - Publish CLI binaries to GitHub / Add installation instructions
