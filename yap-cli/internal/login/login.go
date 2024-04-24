@@ -46,14 +46,14 @@ func InitialModel(ctx *context.Context) Model {
 	usernameInput := textinput.New()
 	usernameInput.Placeholder = "Username"
 	usernameInput.Focus()
-	usernameInput.CharLimit = 256
+	usernameInput.CharLimit = 10
 	usernameInput.Cursor.Style = cursorStyle
 
 	passwordInput := textinput.New()
 	passwordInput.Placeholder = "Password"
 	passwordInput.EchoMode = textinput.EchoPassword
 	passwordInput.EchoCharacter = '•'
-	passwordInput.CharLimit = 256
+	passwordInput.CharLimit = 10
 	passwordInput.Cursor.Style = cursorStyle
 
 	return Model{
@@ -101,6 +101,11 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			s := msg.String()
 
 			if s == "enter" && m.focusIndex == len(m.inputs) {
+				if len(m.usernameInput().Value()) < 3 || len(m.passwordInput().Value()) < 3 {
+					m.err = fmt.Errorf("username and password must be at least 3 characters long")
+					return m, nil
+				}
+
 				// Login button pressed
 				conn, err := grpc.Dial(m.Context.GetHost(), grpc.WithInsecure())
 				defer conn.Close()
@@ -129,6 +134,11 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				}
 				return m, nil
 			} else if s == "enter" && m.focusIndex == len(m.inputs)+1 {
+				if len(m.usernameInput().Value()) < 3 || len(m.passwordInput().Value()) < 3 {
+					m.err = fmt.Errorf("username and password must be at least 3 characters long")
+					return m, nil
+				}
+
 				// Create account button pressed
 				conn, err := grpc.Dial(m.Context.GetHost(), grpc.WithInsecure())
 				defer conn.Close()
