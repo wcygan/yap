@@ -63,53 +63,42 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch msg.Type {
 		case tea.KeyTab, tea.KeyShiftTab, tea.KeyEnter, tea.KeyUp, tea.KeyDown:
-			s := msg.String()
-
-			if s == "enter" && m.focusIndex == len(m.inputs) {
-				if m.focusIndex == 2 {
-					// TODO: Trigger login
-				} else if m.focusIndex == 3 {
-					// TODO: Trigger account creation
+			// Handle focus cycling and input activation
+			if msg.String() == "tab" || msg.String() == "shift+tab" {
+				if msg.String() == "shift+tab" {
+					m.focusIndex--
+				} else {
+					m.focusIndex++
+				}
+				if m.focusIndex >= len(m.inputs) + 2 { // Include two buttons in the focus cycle
+					m.focusIndex = 0
+				} else if m.focusIndex < 0 {
+					m.focusIndex = len(m.inputs) + 1
 				}
 			}
-
-			if s == "up" || s == "shift+tab" {
-				m.focusIndex--
-			} else {
-				m.focusIndex++
-			}
-
-			if m.focusIndex > 3 {
-				m.focusIndex = 0
-			} else if m.focusIndex < 0 {
-				m.focusIndex = 3
-			}
-
-			cmds := make([]tea.Cmd, 2)
-			for i := 0; i <= 1; i++ {
+			// Update focus and style for inputs and buttons
+			for i, input := range m.inputs {
 				if i == m.focusIndex {
-					cmds[i] = m.inputs[i].Focus()
-					m.inputs[i].PromptStyle = focusedStyle
-					m.inputs[i].TextStyle = focusedStyle
-					continue
+					input.Focus()
+					input.PromptStyle = focusedStyle
+					input.TextStyle = focusedStyle
+				} else {
+					input.Blur()
+					input.PromptStyle = blurredStyle
+					input.TextStyle = blurredStyle
 				}
-				m.inputs[i].Blur()
-				m.inputs[i].PromptStyle = blurredStyle
-				m.inputs[i].TextStyle = blurredStyle
 			}
-
-			if m.focusIndex == 2 {
+			if m.focusIndex == len(m.inputs) { // Login button
 				m.loginButton = focusedButton
 				m.createButton = blurredCreateButton
-			} else if m.focusIndex == 3 {
+			} else if m.focusIndex == len(m.inputs) + 1 { // Create account button
 				m.loginButton = blurredButton
 				m.createButton = focusedCreateButton
 			} else {
 				m.loginButton = blurredButton
 				m.createButton = blurredCreateButton
 			}
-
-			return m, tea.Batch(cmds...)
+			return m, nil
 		}
 
 	// Handle text input changes
@@ -118,7 +107,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.passwordInput.Width = msg.Width - 4
 	}
 
-	// Update text inputs
+	// Update text inputs outside the switch-case for KeyMsg
 	m.usernameInput, _ = m.usernameInput.Update(msg)
 	m.passwordInput, _ = m.passwordInput.Update(msg)
 
