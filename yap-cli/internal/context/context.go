@@ -20,16 +20,16 @@ type LoginInformation struct {
 type Page = int
 
 const (
-	Login Page = iota
-	Home
-	Chat
+	LoginPage Page = iota
+	HomePage
+	ChatPage
 )
 
 func InitialContext(host string) *Context {
 	return &Context{
-		host:             host,  // Set the host server address for gRPC communication
-		loginInformation: nil,   // No login information to start; the user must log in
-		currentPage:      Login, // Start on the login page
+		host:             host,      // Set the host server address for gRPC communication
+		loginInformation: nil,       // No login information to start; the user must log in
+		currentPage:      LoginPage, // Start on the login page
 	}
 }
 
@@ -67,5 +67,5 @@ func (c *Context) Logout() {
 	c.Lock()
 	defer c.Unlock()
 	c.loginInformation = nil
-	c.currentPage = Login
+	c.currentPage = LoginPage
 }

@@ -38,6 +38,10 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.Type {
+		case tea.KeyBackspace:
+			// TODO: remove me; it's just a test
+			m.Context.SetCurrentPage(context.HomePage)
+			return m, nil
 		case tea.KeyCtrlC:
 			return m, tea.Quit
 		}
@@ -45,8 +49,9 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	// Process the pages
 	switch m.Context.GetCurrentPage() {
-	case context.Login:
-		_, cmd := m.login.Update(msg)
+	case context.LoginPage:
+		loginModel, cmd := m.login.Update(msg)
+		m.login = loginModel.(login.Model)
 		return m, cmd
 	default:
 		panic("page is not implemented")
@@ -57,11 +62,10 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m Model) View() string {
 	switch m.Context.GetCurrentPage() {
-	case context.Login:
+	case context.LoginPage:
 		return m.login.View()
 	default:
+		return "Hello, world!"
 		//	no-op until we implement the other pages
 	}
-
-	panic("unhandled default case")
 }
