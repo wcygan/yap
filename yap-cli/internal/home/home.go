@@ -2,15 +2,18 @@ package home
 
 import (
 	"github.com/charmbracelet/bubbles/spinner"
-	"github.com/wcygan/yap/yap-cli/internal/application"
+	"github.com/charmbracelet/bubbles/textinput"
+	"github.com/wcygan/yap/yap-cli/internal/context"
 )
 
 type Model struct {
-	*application.Context
-	taskSpinner spinner.Model
+	*context.Context
+	taskSpinner     spinner.Model
+	createChatInput textinput.Model
+	joinChatInput   textinput.Model
 }
 
-func InitialModel(ctx *application.Context) Model {
+func InitialModel(ctx *context.Context) Model {
 	taskSpinner := spinner.Model{Spinner: spinner.Dot}
 	return Model{
 		Context:     ctx,

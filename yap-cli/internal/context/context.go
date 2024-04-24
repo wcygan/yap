@@ -1,4 +1,4 @@
-package application
+package context
 
 import "sync"
 
@@ -23,6 +23,13 @@ const (
 	Home
 	Chat
 )
+
+func InitialContext() *Context {
+	return &Context{
+		loginInformation: nil,   // No login information to start; the user must log in
+		currentPage:      Login, // Start on the login page
+	}
+}
 
 func (c *Context) SetCurrentPage(page Page) {
 	c.Lock()

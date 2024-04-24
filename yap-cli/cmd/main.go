@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/spf13/cobra"
-	"github.com/wcygan/yap/yap-cli/internal/ctx"
+	"github.com/wcygan/yap/yap-cli/internal/application"
 	"os"
 
 	tea "github.com/charmbracelet/bubbletea"
@@ -19,7 +19,7 @@ var rootCmd = &cobra.Command{
 	Use:   "yap-cli",
 	Short: "Yap with people on the internet!",
 	Run: func(cmd *cobra.Command, args []string) {
-		if _, err := tea.NewProgram(ctx.InitialModel()).Run(); err != nil {
+		if _, err := tea.NewProgram(application.InitialModel()).Run(); err != nil {
 			fmt.Printf("could not start program: %s\n", err)
 			os.Exit(1)
 		}
