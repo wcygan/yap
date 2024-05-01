@@ -14,6 +14,12 @@ func NewChatService() *ChatService {
 }
 
 func (s *ChatService) ChatStream(stream chat_pb.ClientStreamingService_ChatStreamServer) error {
+	// TODO 1: Figure out how to handle send & recv
+	// TODO 2: Use a channel and add it to an internal connection registry
+	//         See https://stackoverflow.com/a/49877632 or https://eli.thegreenplace.net/2020/pubsub-using-channels-in-go/
+	// TODO 3: When the connection is dropped, remove it from the registry
+	// TODO 4: Create a Pulsar listener in the background that listens for messages and sends them over the right channels
+
 	// TODO: Handle client connection, use Pulsar to fan out messages
 	for {
 		in, err := stream.Recv()
