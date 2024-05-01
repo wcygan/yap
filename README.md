@@ -16,6 +16,14 @@ cd yap-cli
 go run cmd/main.go
 ```
 
+## Protocol Buffers
+
+To generate the protocol buffers, run:
+
+```
+buf generate proto
+```
+
 ## Connecting to PostgreSQL Locally
 
 Pick a postgres node (`postgres-69c569c6c9-wj2zx`):
