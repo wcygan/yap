@@ -5,7 +5,6 @@ Here's the high-level design of the application:
     - API (yap-api)
     - Authentication (auth-service)
     - Messaging (chat-service)
-    - Group management (group-service)
 - gRPC for inter-service communication and client-api communication
 - buf for protobuf code generation
 - PostgreSQL database for persistence
