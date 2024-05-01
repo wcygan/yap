@@ -40,10 +40,33 @@ deploy:
 apiVersion: skaffold/v4beta9
 kind: Config
 metadata:
+  name: chat-service
+requires:
+  - configs:
+      - auth-db-configurations
+manifests:
+  rawYaml:
+    - chat-service/k8s/deployment.yaml
+    - chat-service/k8s/service.yaml
+build:
+  local:
+    concurrency: 0
+  artifacts:
+    - image: chat-service
+      context: .
+      docker:
+        dockerfile: chat-service/Dockerfile
+deploy:
+  kubectl: {}
+---
+apiVersion: skaffold/v4beta9
+kind: Config
+metadata:
   name: yap-api
 requires:
   - configs:
       - auth-service
+      - chat-service
 manifests:
   rawYaml:
     - yap-api/k8s/deployment.yaml 
