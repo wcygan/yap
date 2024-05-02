@@ -18,6 +18,23 @@ portForward:
 apiVersion: skaffold/v4beta9
 kind: Config
 metadata:
+  name: chat-db-configurations
+manifests:
+  rawYaml:
+    - chat-db/k8s/deployment.yaml
+    - chat-db/k8s/service.yaml
+deploy:
+  kubectl: {}
+portForward:
+  - resourceType: deployment
+    resourceName: chat-db
+    port: 9042
+    localPort: 9042
+---
+
+apiVersion: skaffold/v4beta9
+kind: Config
+metadata:
   name: auth-service
 requires:
   - configs:
@@ -43,7 +60,7 @@ metadata:
   name: chat-service
 requires:
   - configs:
-      - auth-db-configurations
+      - chat-db-configurations
 manifests:
   rawYaml:
     - chat-service/k8s/deployment.yaml

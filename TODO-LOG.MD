@@ -1,6 +1,7 @@
 Things you need to do...
 
 High Priority
+- Use https://opensource.docs.scylladb.com/stable/cql/cqlsh.html to interact with ScyllaDB in k8s
 - Implement the backend flow for chatting
 - Figure out how to use ingress for yap-api instead of port-forwarding
 

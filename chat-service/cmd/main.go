@@ -12,8 +12,13 @@ import (
 func main() {
 	s := grpc.NewServer()
 
+	chatService, err := chat.NewChatService()
+	if err != nil {
+		log.Fatalf("failed to create chat service: %v", err)
+	}
+
 	// Register the chat service
-	chat_pb.RegisterMessagePersistenceServiceServer(s, chat.NewChatService())
+	chat_pb.RegisterMessagePersistenceServiceServer(s, chatService)
 
 	lis, err := net.Listen("tcp", ":50052")
 	if err != nil {

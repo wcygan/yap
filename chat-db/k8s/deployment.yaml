@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chat-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: scylla
+  template:
+    metadata:
+      labels:
+        app: scylla
+    spec:
+      containers:
+        - name: scylla
+          image: scylladb/scylla:5.2.0
+          ports:
+            - containerPort: 9042

@@ -43,6 +43,18 @@ Port forward it:
 kubectl port-forward postgres-69c569c6c9-wj2zx 5432:5432
 ```
 
+or just do
+
+```
+kubectl port-forward svc/auth-db 5432:5432
+```
+
+For ScyllaDB, you can do
+
+```
+kubectl port-forward svc/chat-db 9042:9042
+```
+
 Use a Database Driver and a connection string similar to the following: 
 
 ```
