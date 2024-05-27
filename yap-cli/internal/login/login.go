@@ -99,18 +99,18 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			s := msg.String()
 
 			if s == "enter" && m.focusIndex == len(m.inputs) {
+				// Login button pressed
 				if len(m.usernameInput().Value()) < 3 || len(m.passwordInput().Value()) < 3 {
 					m.err = fmt.Errorf("username and password must be at least 3 characters long")
 					return m, nil
 				}
 
 				// Create a new AuthServiceClient with the connection
-				client := auth.NewAuthServiceClient(m.Client())
 				req := &auth.LoginRequest{
 					Username: m.usernameInput().Value(),
 					Password: m.passwordInput().Value(),
 				}
-				loginResponse, err := client.Login(ctx.Background(), req)
+				loginResponse, err := m.GetAuthClient().Login(ctx.Background(), req)
 				if err != nil {
 					m.err = fmt.Errorf("registration failed: %v", err)
 				} else {
@@ -125,20 +125,19 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				}
 				return m, nil
 			} else if s == "enter" && m.focusIndex == len(m.inputs)+1 {
+				// Create account button pressed
 				if len(m.usernameInput().Value()) < 3 || len(m.passwordInput().Value()) < 3 {
 					m.err = fmt.Errorf("username and password must be at least 3 characters long")
 					return m, nil
 				}
 
-				// Create account button pressed
-
 				// Create a new AuthServiceClient with the connection
-				client := auth.NewAuthServiceClient(m.Client())
 				req := &auth.RegisterRequest{
 					Username: m.usernameInput().Value(),
 					Password: m.passwordInput().Value(),
 				}
-				registerResponse, err := client.Register(ctx.Background(), req)
+
+				registerResponse, err := m.Context.GetAuthClient().Register(ctx.Background(), req)
 				if err != nil {
 					m.err = fmt.Errorf("registration failed: %v", err)
 				} else {
