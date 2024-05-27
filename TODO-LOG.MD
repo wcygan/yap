@@ -65,7 +65,7 @@ message JoinChatRequest {
   // The user's unique identifier
   string user_id = 1;
   // The name of the chat room to join
-  string room_name = 2;
+  string channel_name = 2;
 }
 
 // A chat message
@@ -81,7 +81,7 @@ message ChatMessage {
 // A message that will be persisted for a specific chat room
 message MessageToPersist {
   // The name of the chat room to which the message belongs
-  string room_name = 1;
+  string channel_name = 1;
   // The chat message to persist
   ChatMessage message = 2;
 }

@@ -1,6 +1,17 @@
 apiVersion: skaffold/v4beta9
 kind: Config
 metadata:
+  name: roles
+manifests:
+  rawYaml:
+    - k8s/role.yaml
+    - k8s/rolebinding.yaml
+deploy:
+  kubectl: {}
+---
+apiVersion: skaffold/v4beta9
+kind: Config
+metadata:
   name: auth-db-configurations
 manifests:
   rawYaml:
@@ -19,10 +30,15 @@ apiVersion: skaffold/v4beta9
 kind: Config
 metadata:
   name: chat-db-configurations
+requires:
+  - configs:
+      - roles
 manifests:
   rawYaml:
-    - chat-db/k8s/deployment.yaml
+    - chat-db/k8s/statefulset.yaml
     - chat-db/k8s/service.yaml
+    - chat-db/k8s/job.yaml
+    - chat-db/k8s/configmap.yaml
 deploy:
   kubectl: {}
 portForward:
@@ -53,6 +69,11 @@ build:
         dockerfile: auth-service/Dockerfile
 deploy:
   kubectl: {}
+portForward:
+  - resourceType: deployment
+    resourceName: auth-service
+    port: 50051
+    localPort: 50051
 ---
 apiVersion: skaffold/v4beta9
 kind: Config
@@ -75,6 +96,11 @@ build:
         dockerfile: chat-service/Dockerfile
 deploy:
   kubectl: {}
+portForward:
+  - resourceType: deployment
+    resourceName: chat-service
+    port: 50052
+    localPort: 50052
 ---
 apiVersion: skaffold/v4beta9
 kind: Config
@@ -99,7 +125,6 @@ build:
 deploy:
   kubectl: {}
 portForward:
-  # This port-forwarding enables clients to connect to the yap-api service
   - resourceType: deployment
     resourceName: yap-api
     port: 50050

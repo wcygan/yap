@@ -12,6 +12,21 @@ spec:
       labels:
         app: chat-service
     spec:
+      initContainers:
+        - name: wait-for-chat-db
+          image: bitnami/kubectl:latest
+          command:
+            - /bin/sh
+            - -c
+            - |
+              until kubectl get svc chat-db; do
+                echo "Waiting for chat-db service to be ready"
+                sleep 5
+              done
+              until kubectl wait --for=condition=complete job/chat-db-init --timeout=120s; do
+                echo "Waiting for chat-db-init job to complete"
+                sleep 5
+              done
       containers:
         - name: chat-service
           image: chat-service

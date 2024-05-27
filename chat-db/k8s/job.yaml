@@ -1,0 +1,39 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: chat-db-init
+spec:
+  template:
+    spec:
+      initContainers:
+        - name: wait-for-scylla
+          image: busybox:1.28
+          command:
+            - /bin/sh
+            - -c
+            - |
+              until nslookup chat-db-0.chat-db.default.svc.cluster.local; do
+                echo "Waiting for ChatDB StatefulSet to be ready"
+                sleep 2
+              done
+      containers:
+        - name: chat-db-init
+          image: "scylladb/scylla:5.2.0"
+          command:
+            - /bin/sh
+            - -c
+            - |
+              cqlsh ${SCYLLA_HOST} \
+                -uroot \
+                < /initdb/init.cql
+          env:
+            - name: SCYLLA_HOST
+              value: chat-db-0.chat-db.default.svc.cluster.local
+          volumeMounts:
+            - name: chat-db-initdb
+              mountPath: /initdb
+      restartPolicy: Never
+      volumes:
+        - name: chat-db-initdb
+          configMap:
+            name: chat-db-initdb

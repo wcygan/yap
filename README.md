@@ -24,6 +24,30 @@ To generate the protocol buffers, run:
 buf generate proto
 ```
 
+## ScyllaDB
+
+For ScyllaDB, you can do
+
+```
+kubectl port-forward svc/chat-db 9042:9042
+```
+
+Alternatively, you can start a scylla pod using [cqlsh](https://opensource.docs.scylladb.com/stable/cql/cqlsh.html) like this:
+
+Then you can run some queries:
+
+```
+kubectl exec -it $(kubectl get pods -l app=scylla -o jsonpath='{.items[0].metadata.name}') -- cqlsh
+```
+
+```sql
+USE chat;
+DESCRIBE TABLES;
+select * from messages;
+```
+
+
+
 ## Connecting to PostgreSQL Locally
 
 Pick a postgres node (`postgres-69c569c6c9-wj2zx`):
@@ -47,12 +71,6 @@ or just do
 
 ```
 kubectl port-forward svc/auth-db 5432:5432
-```
-
-For ScyllaDB, you can do
-
-```
-kubectl port-forward svc/chat-db 9042:9042
 ```
 
 Use a Database Driver and a connection string similar to the following: 

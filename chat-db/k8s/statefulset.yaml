@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: chat-db
+spec:
+  serviceName: "chat-db"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: scylla
+  template:
+    metadata:
+      labels:
+        app: scylla
+    spec:
+      containers:
+        - name: scylla
+          image: scylladb/scylla:5.2.0
+          ports:
+            - containerPort: 9042
+          startupProbe:
+            tcpSocket:
+              port: 9042
+            failureThreshold: 10
+            periodSeconds: 5
+  volumeClaimTemplates:
+    - metadata:
+        name: chat-db-data
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 1Gi

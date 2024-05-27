@@ -10,9 +10,15 @@ service ClientStreamingService {
   rpc ChatStream (stream ChatPacket) returns (stream ChatPacket) {}
 }
 
+// A service for creating and finding chat channels
+service ChannelService {
+  // Create or find a chat channel
+  rpc FindOrCreateChannel (CreateChannelRequest) returns (CreateChannelResponse) {}
+}
+
 // A service for persisting chat messages
 service MessagePersistenceService {
-  // A unary rpc to submit chat messages for persistence
+  // Submit a chat message to be persisted
   rpc PersistChatMessage (MessageToPersist) returns (google.protobuf.Empty) {}
 }
 
@@ -31,7 +37,7 @@ message JoinChatRequest {
   // The user's unique identifier
   string user_id = 1;
   // The name of the chat room to join
-  string room_name = 2;
+  string channel_name = 2;
 }
 
 // A chat message
@@ -46,8 +52,25 @@ message ChatMessage {
 
 // A message that will be persisted for a specific chat room
 message MessageToPersist {
-  // The name of the chat room to which the message belongs
-  string room_name = 1;
-  // The chat message to persist
-  ChatMessage message = 2;
+  string channel_id = 1;
+  // The user's unique identifier
+  string user_id = 2;
+  // The message content
+  string message = 3;
+  // The timestamp of the message
+  int64 timestamp = 4;
+}
+
+// A request to create a chat channel
+message CreateChannelRequest {
+  // The name of the chat channel
+  string channel_name = 1;
+}
+
+// A response to a request to create a chat channel
+message CreateChannelResponse {
+  // The name of the chat channel
+  string channel_name = 1;
+  // The unique identifier of the chat channel
+  string channel_id = 2;
 }

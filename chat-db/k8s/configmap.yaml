@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: chat-db-initdb
+data:
+  init.cql: |
+
+    CREATE KEYSPACE IF NOT EXISTS chat WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};
+        
+    CREATE TABLE IF NOT EXISTS chat.messages
+    (
+        channel_id uuid,
+        id timeuuid,
+        user_id  uuid,
+        content    text,
+        created_at  timestamp,
+        PRIMARY KEY (channel_id, id)
+    ) WITH CLUSTERING ORDER BY (id DESC);
+    
+    CREATE TABLE IF NOT EXISTS chat.channels
+    (
+        id  uuid PRIMARY KEY,
+        name        text,
+        created_at  timestamp
+    );
+    
+    CREATE INDEX ON chat.channels (name);

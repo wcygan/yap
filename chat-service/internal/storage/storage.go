@@ -16,20 +16,20 @@ func NewStorage(hosts ...string) (*Storage, error) {
 	cluster.NumConns = 2
 	session, err := cluster.CreateSession()
 	if err != nil {
-		// TODO: If you can't get this connection to work, you can temporarily disable it & try to connect with cqlsh first
 		return nil, err
 	}
 	return &Storage{session: session}, nil
 }
 
-func (s *Storage) SaveMessage(roomName string, userID string, message string, timestamp time.Time) error {
-	query := "INSERT INTO chat (room_name, timestamp, user_id, message) VALUES (?, ?, ?, ?)"
-	return s.session.Query(query, roomName, timestamp, userID, message).Exec()
+func (s *Storage) SaveMessage(channelId gocql.UUID, userID gocql.UUID, content string, timestamp time.Time) error {
+	messageId := gocql.TimeUUID()
+	query := "INSERT INTO chat.messages (channel_id, id, user_id, content, created_at) VALUES (?, ?, ?, ?, ?)"
+	return s.session.Query(query, channelId, messageId, userID, content, timestamp).Exec()
 }
 
-func (s *Storage) GetMessages(roomName string, limit int) ([]map[string]interface{}, error) {
-	query := "SELECT timestamp, user_id, message FROM chat WHERE room_name = ? LIMIT ?"
-	iter := s.session.Query(query, roomName, limit).Iter()
+func (s *Storage) GetMessages(channelId string, limit int) ([]map[string]interface{}, error) {
+	query := "SELECT timestamp, user_id, message FROM chat.messages WHERE channel_name = ? LIMIT ?"
+	iter := s.session.Query(query, channelId, limit).Iter()
 	var messages []map[string]interface{}
 	for {
 		row := make(map[string]interface{})
