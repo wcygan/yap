@@ -17,8 +17,6 @@ var (
 	cursorStyle         = focusedStyle.Copy()
 	noStyle             = lipgloss.NewStyle()
 	cursorModeHelpStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("244"))
-	focusedCreateButton = focusedStyle.Copy().Render("[ Create Chat ]")
-	blurredCreateButton = fmt.Sprintf("[ %s ]", blurredStyle.Render("Create Chat"))
 	focusedJoinButton   = focusedStyle.Copy().Render("[ Join Chat ]")
 	blurredJoinButton   = fmt.Sprintf("[ %s ]", blurredStyle.Render("Join Chat"))
 	focusedLogoutButton = focusedStyle.Copy().Render("[ Logout ]")
@@ -51,7 +49,6 @@ func InitialModel(ctx *context.Context) Model {
 		taskSpinner:   taskSpinner,
 		chatNameInput: chatNameInput,
 		focusIndex:    0,
-		createButton:  blurredCreateButton,
 		joinButton:    blurredJoinButton,
 		logoutButton:  blurredLogoutButton,
 		cursorMode:    cursor.CursorBlink,
@@ -75,10 +72,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			s := msg.String()
 
 			if s == "enter" {
-				if m.isCreateChatFocused() {
-					// Create chat button pressed
-					// TODO: Implement create chat functionality
-				} else if m.isJoinChatFocused() {
+				if m.isJoinChatFocused() {
 					// Join chat button pressed
 					// TODO: Implement join chat functionality
 					m.Context.SetCurrentPage(context.ChatPage)
@@ -95,13 +89,12 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.focusIndex++
 			}
 
-			if m.focusIndex > 3 {
+			if m.focusIndex > 2 {
 				m.focusIndex = 0
 			} else if m.focusIndex < 0 {
-				m.focusIndex = 3
+				m.focusIndex = 2
 			}
 
-			m.createButton = blurredCreateButton
 			m.joinButton = blurredJoinButton
 			m.logoutButton = blurredLogoutButton
 			if m.isTextInputFocused() {
@@ -112,9 +105,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.chatNameInput.Blur()
 				m.chatNameInput.PromptStyle = noStyle
 				m.chatNameInput.TextStyle = noStyle
-				if m.isCreateChatFocused() {
-					m.createButton = focusedCreateButton
-				} else if m.isJoinChatFocused() {
+				if m.isJoinChatFocused() {
 					m.joinButton = focusedJoinButton
 				} else {
 					m.logoutButton = focusedLogoutButton
@@ -163,14 +154,10 @@ func (m Model) isTextInputFocused() bool {
 	return m.focusIndex == 0
 }
 
-func (m Model) isCreateChatFocused() bool {
+func (m Model) isJoinChatFocused() bool {
 	return m.focusIndex == 1
 }
 
-func (m Model) isJoinChatFocused() bool {
-	return m.focusIndex == 2
-}
-
 func (m Model) isLogoutFocused() bool {
-	return m.focusIndex == 3
+	return m.focusIndex == 2
 }
