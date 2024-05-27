@@ -17,14 +17,18 @@ type Model struct {
 }
 
 // InitialModel creates the initial model for the application. It will cause the application to start on the login page.
-func InitialModel(host string) Model {
-	ctx := context.InitialContext(host)
+func InitialModel(host string) (Model, error) {
+	ctx, err := context.InitialContext(host)
+	if err != nil {
+		return Model{}, err
+	}
+
 	return Model{
 		Context: ctx, // Share the context with each page
 		login:   login.InitialModel(ctx),
 		home:    home.InitialModel(ctx),
 		chat:    chat.InitialModel(ctx),
-	}
+	}, nil
 }
 
 func (m Model) Init() tea.Cmd {

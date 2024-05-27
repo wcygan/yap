@@ -79,6 +79,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.textarea.Reset()
 			m.viewport.GotoBottom()
 		case tea.KeyCtrlH:
+			m.Context.SetChannelName("")
 			m.Context.SetCurrentPage(context.HomePage)
 			return m, nil
 		}

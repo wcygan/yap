@@ -1,6 +1,11 @@
 package context
 
-import "sync"
+import (
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
+	"log"
+	"sync"
+)
 
 // Context contains the shared state of the application
 type Context struct {
@@ -8,6 +13,8 @@ type Context struct {
 	host             string            // The host server address
 	loginInformation *LoginInformation // The user's login information
 	currentPage      Page              // The current page the user is on
+	channelName      string            // The name of the chat channel
+	client           *grpc.ClientConn  // The gRPC client connection
 }
 
 // LoginInformation contains information for the authentication lifecycle
@@ -25,18 +32,36 @@ const (
 	ChatPage
 )
 
-func InitialContext(host string) *Context {
+func InitialContext(host string) (*Context, error) {
+	conn, err := grpc.Dial(host, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		log.Fatalf("Failed to connect to gRPC server: %v", err)
+	}
+
 	return &Context{
 		host:             host,      // Set the host server address for gRPC communication
 		loginInformation: nil,       // No login information to start; the user must log in
 		currentPage:      LoginPage, // Start on the login page
-	}
+		client:           conn,      // Set the gRPC client connection
+	}, nil
 }
 
 func (c *Context) GetHost() string {
 	c.RLock()
 	defer c.RUnlock()
 	return c.host
+}
+
+func (c *Context) SetChannelName(channelName string) {
+	c.Lock()
+	defer c.Unlock()
+	c.channelName = channelName
+}
+
+func (c *Context) GetChannelName() string {
+	c.RLock()
+	defer c.RUnlock()
+	return c.channelName
 }
 
 func (c *Context) SetCurrentPage(page Page) {
@@ -68,4 +93,10 @@ func (c *Context) Logout() {
 	defer c.Unlock()
 	c.loginInformation = nil
 	c.currentPage = LoginPage
+}
+
+func (c *Context) Client() *grpc.ClientConn {
+	c.RLock()
+	defer c.RUnlock()
+	return c.client
 }

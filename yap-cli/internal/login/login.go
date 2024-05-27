@@ -2,8 +2,6 @@ package login
 
 import (
 	"fmt"
-	"google.golang.org/grpc"
-	"log"
 	"strings"
 
 	"github.com/charmbracelet/bubbles/cursor"
@@ -106,15 +104,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					return m, nil
 				}
 
-				// Login button pressed
-				conn, err := grpc.Dial(m.Context.GetHost(), grpc.WithInsecure())
-				defer conn.Close()
-				if err != nil {
-					log.Fatalf("Failed to connect to gRPC server: %v", err)
-				}
-
 				// Create a new AuthServiceClient with the connection
-				client := auth.NewAuthServiceClient(conn)
+				client := auth.NewAuthServiceClient(m.Client())
 				req := &auth.LoginRequest{
 					Username: m.usernameInput().Value(),
 					Password: m.passwordInput().Value(),
@@ -140,14 +131,9 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				}
 
 				// Create account button pressed
-				conn, err := grpc.Dial(m.Context.GetHost(), grpc.WithInsecure())
-				defer conn.Close()
-				if err != nil {
-					log.Fatalf("Failed to connect to gRPC server: %v", err)
-				}
 
 				// Create a new AuthServiceClient with the connection
-				client := auth.NewAuthServiceClient(conn)
+				client := auth.NewAuthServiceClient(m.Client())
 				req := &auth.RegisterRequest{
 					Username: m.usernameInput().Value(),
 					Password: m.passwordInput().Value(),
@@ -194,7 +180,6 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					m.inputs[i].PromptStyle = noStyle
 					m.inputs[i].TextStyle = noStyle
 				}
-
 			}
 
 			if m.focusIndex == len(m.inputs) {

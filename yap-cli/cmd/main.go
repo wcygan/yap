@@ -20,7 +20,14 @@ var rootCmd = &cobra.Command{
 	Short: "Yap with people on the internet!",
 	Run: func(cmd *cobra.Command, args []string) {
 		host := cmd.Flag("host").Value.String()
-		if _, err := tea.NewProgram(application.InitialModel(host)).Run(); err != nil {
+
+		initialModel, err := application.InitialModel(host)
+		if err != nil {
+			fmt.Printf("could not create initial model: %s\n", err)
+			os.Exit(1)
+		}
+
+		if _, err := tea.NewProgram(initialModel).Run(); err != nil {
 			fmt.Printf("could not start program: %s\n", err)
 			os.Exit(1)
 		}
