@@ -14,7 +14,7 @@ func NewChatService() *ChatService {
 }
 
 func (s *ChatService) ChatStream(stream chat_pb.ClientStreamingService_ChatStreamServer) error {
-	// TODO 1: Figure out how to handle send & recv
+	// TODO 1: Figure out how to handle send & recv in multiplex fashion (maybe use select?)
 	// TODO 2: Use a channel and add it to an internal connection registry
 	//         See https://stackoverflow.com/a/49877632 or https://eli.thegreenplace.net/2020/pubsub-using-channels-in-go/
 	// TODO 3: When the connection is dropped, remove it from the registry
@@ -27,5 +27,17 @@ func (s *ChatService) ChatStream(stream chat_pb.ClientStreamingService_ChatStrea
 			return err
 		}
 		log.Printf("Received message: %s", in.String())
+
+		hello := &chat_pb.ChatPacket{PacketType: &chat_pb.ChatPacket_ChatMessage{
+			ChatMessage: &chat_pb.ChatMessage{
+				Message: "Hello, world!",
+			},
+		}}
+
+		err = stream.Send(hello)
+		if err != nil {
+			return err
+		}
+		log.Printf("Sent message: %s", hello.String())
 	}
 }

@@ -7,9 +7,7 @@ import (
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
-	chatpb "github.com/wcygan/yap/generated/go/chat/v1"
 	"github.com/wcygan/yap/yap-cli/internal/context"
-	ctx "golang.org/x/net/context"
 	"strings"
 )
 
@@ -79,28 +77,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					// TODO: Implement join chat functionality
 					if m.chatNameInput.Value() != "" {
 						m.Context.SetChannelName(m.chatNameInput.Value())
-
-						// --- TODO: MOVE THIS CODE INTO CHAT ROOM
-						backgroundContext := ctx.Background()
-						joinChatRequest := &chatpb.JoinChatRequest{
-							ChannelName: m.Context.GetChannelName(),
-						}
-
-						stream, err := m.Context.GetChatClient().ChatStream(backgroundContext)
-						if err != nil {
-							m.err = err
-							return m, nil
-						}
-
-						// Create a ChatPacket with the JoinChatRequest
-						chatPacket := &chatpb.ChatPacket{
-							PacketType: &chatpb.ChatPacket_JoinRequest{
-								JoinRequest: joinChatRequest,
-							},
-						}
-						err = stream.Send(chatPacket)
-						// --- TODO: MOVE THIS CODE INTO CHAT ROOM
-
+						// Need to figure out how to make the chat's update call work after doing this
+						m.Context.SetShouldStartNewChatRoom(true)
 						m.Context.SetCurrentPage(context.ChatPage)
 						return m, nil
 					}

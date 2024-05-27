@@ -11,13 +11,14 @@ import (
 
 // Context contains the shared state of the application
 type Context struct {
-	sync.RWMutex                                         // The context is shared, so we need to protect it
-	host             string                              // The host server address
-	loginInformation *LoginInformation                   // The user's login information
-	currentPage      Page                                // The current page the user is on
-	channelName      string                              // The name of the chat channel
-	auth             authpb.AuthServiceClient            // The authentication service client
-	chat             chatpb.ClientStreamingServiceClient // The chat service client
+	sync.RWMutex                                               // The context is shared, so we need to protect it
+	host                   string                              // The host server address
+	loginInformation       *LoginInformation                   // The user's login information
+	currentPage            Page                                // The current page the user is on
+	channelName            string                              // The name of the chat channel
+	shouldStartNewChatRoom bool                                // a flag to determine if we should start a new chat room
+	auth                   authpb.AuthServiceClient            // The authentication service client
+	chat                   chatpb.ClientStreamingServiceClient // The chat service client
 }
 
 // LoginInformation contains information for the authentication lifecycle
@@ -112,4 +113,16 @@ func (c *Context) GetChatClient() chatpb.ClientStreamingServiceClient {
 	c.RLock()
 	defer c.RUnlock()
 	return c.chat
+}
+
+func (c *Context) SetShouldStartNewChatRoom(shouldStartNewChatRoom bool) {
+	c.Lock()
+	defer c.Unlock()
+	c.shouldStartNewChatRoom = shouldStartNewChatRoom
+}
+
+func (c *Context) ShouldStartNewChatRoom() bool {
+	c.RLock()
+	defer c.RUnlock()
+	return c.shouldStartNewChatRoom
 }
