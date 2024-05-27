@@ -1,3 +1,17 @@
+- write stream connection to yap-api
+- join channel request from client
+- place client into chat room
+- SQL to create / fetch channels
+- hook up endpoints 
+- send chat messages from client
+- forward chat messages from yap-api to chat-service
+- add pulsar & produce chat messages after persisting them
+- consume the chat messages and forward them to all of the proper streaming connections (pub sub using channels in go https://eli.thegreenplace.net/2020/pubsub-using-channels-in-go/)
+- send chat messages to client
+- display chat messages in chat window
+
+---
+
 Things you need to do...
 
 High Priority
