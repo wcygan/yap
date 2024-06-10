@@ -1,4 +1,5 @@
-- write stream connection to yap-api
+- maybe just use a single-direction server streaming RPC to receive all chat messages
+- then use a separate server non-streaming RPC to send every new chat message
 - join channel request from client
 - place client into chat room
 - SQL to create / fetch channels
