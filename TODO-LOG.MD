@@ -1,6 +1,23 @@
-- maybe just use a single-direction server streaming RPC to receive all chat messages
+--- New ideas from 06/10/24:
+
+- figure out how to solve the "in-memory broadcast" problem (single producer, multiple consumers) via https://dev.to/karanpratapsingh/embedding-nats-in-go-19o. see https://www.reddit.com/r/golang/comments/14r5q62/in_memory_message_broker_any_recommendations/ or https://watermill.io/ or https://dev.to/karanpratapsingh/embedding-nats-in-go-19o or https://www.reddit.com/r/golang/comments/1bk6n74/single_producer_continuously_notify_multiple/
+- maybe just use a single-direction server streaming RPC to receive all chat messages. see https://grpc.io/docs/what-is-grpc/core-concepts/#server-streaming-rpc. this will take a join server request and return a stream of messages.
 - then use a separate server non-streaming RPC to send every new chat message
 - join channel request from client
+
+Rationale:
+
+By solving the "in-memory broadcast" problem, it allows us to efficiently send chat messages to all clients connected to a chat room.
+
+The logic looks like this:
+1. client sends a message to yap-api, which then forwards it to chat-service
+2. chat-service persists the message into ScyllaDB, and then publishes it to Pulsar
+3. each instance of yap-api receives the message from Pulsar and then broadcasts it internally (via nats) to all clients connected to the chat room on the particular yap-api instance
+
+This design allows horizontal scaling of yap-api and makes it such that it doesn't matter which yap-api instance the client is connected to; they will still receive all chat messages.
+
+--- Older stuff:
+
 - place client into chat room
 - SQL to create / fetch channels
 - hook up endpoints 
