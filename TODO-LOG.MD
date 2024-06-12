@@ -9,6 +9,7 @@
 - [general] figure out how to connect to scylladb from intellij using superuser 'cassandra'
 - [yap-cli] add a persistent log for file yap-cli so that it can be leveraged for debugging
 - [yap-cli] figure out why you need to press ctrl+h twice before 
+- [yap-api][chat-service] need to spin up a pulsar instance and connect some clients to it
 
 --- New ideas from 06/10/24:
 
