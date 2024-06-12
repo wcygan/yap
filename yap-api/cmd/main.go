@@ -22,8 +22,12 @@ func main() {
 	log.Printf("auth service is registered")
 
 	// Register the chat service
-	chatpb.RegisterClientStreamingServiceServer(s, chat.NewChatService())
+	chatpb.RegisterMessagingServiceServer(s, chat.NewMessagingService())
 	log.Printf("chat service is registered")
+
+	// Register the chat room service
+	chatpb.RegisterChatRoomServiceServer(s, chat.NewChatRoomService())
+	log.Printf("chat room service is registered")
 
 	lis, err := net.Listen("tcp", ":50050")
 	if err != nil {

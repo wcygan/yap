@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	chatDB, err := storage.NewStorage("chat-db")
+	_, err := storage.NewStorage("chat-db")
 	if err != nil {
 		log.Fatalf("failed to create storage: %v", err)
 	}
@@ -20,14 +20,9 @@ func main() {
 	reflection.Register(s)
 	log.Printf("reflection is enabled")
 
-	chatService, err := chat.NewChatService(chatDB)
-	if err != nil {
-		log.Fatalf("failed to create chat service: %v", err)
-	}
-
-	// Register the chat service
-	chatpb.RegisterMessagePersistenceServiceServer(s, chatService)
-	log.Printf("message persistence service is registered")
+	// Register the messaging service
+	chatpb.RegisterMessagingServiceServer(s, chat.NewMessagingService())
+	log.Printf("messaging service is registered")
 
 	lis, err := net.Listen("tcp", ":50052")
 	if err != nil {

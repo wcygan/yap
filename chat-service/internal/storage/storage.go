@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"log"
 	"time"
 
 	"github.com/gocql/gocql"
@@ -18,6 +19,7 @@ func NewStorage(hosts ...string) (*Storage, error) {
 	if err != nil {
 		return nil, err
 	}
+	log.Printf("storage is connected")
 	return &Storage{session: session}, nil
 }
 

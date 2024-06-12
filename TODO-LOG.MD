@@ -1,6 +1,7 @@
 --- 06/11/24
 
-- need to send the user_id back to clients so they can include it in messages
+- need to update postgres to use both user_id and user_name
+- update auth-service to send the user_id back to clients so they can include it in messages
 - need to send "user joined" event to clients and include their user_id to color their messages
 
 --- New ideas from 06/10/24:
