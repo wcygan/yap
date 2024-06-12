@@ -14,7 +14,7 @@ spec:
         app: scylla
     spec:
       containers:
-        - name: scylla
+        - name: chat-db
           image: scylladb/scylla:5.2.0
           ports:
             - containerPort: 9042
