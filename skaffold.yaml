@@ -82,6 +82,7 @@ metadata:
 requires:
   - configs:
       - chat-db-configurations
+      - roles
 manifests:
   rawYaml:
     - chat-service/k8s/deployment.yaml
