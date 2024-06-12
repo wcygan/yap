@@ -1,6 +1,7 @@
 --- 06/11/24
 
-- update [chat.md](documentation/grpcurl/chat.md) with the new endpoints
+- [yap-cli] maybe you need to re-evaluate how you've setup the MVP for yap-cli... possibly the application context can hold state related to the chat room... problem is that `StartNewChatRoom` doesn't get called upon page transition. it occurs only after the first update (keystroke) in [chat.go](yap-cli/internal/chat/chat.go)
+- [chat-service] update [chat.md](documentation/grpcurl/chat.md) with the new endpoints
 - [chat-service] make sure that the role configs are applied before the chat-service starts to prevent hangup
 - [auth-db] need to update postgres to use both user_id and user_name in schema
 - [auth-service] update auth-service to send the user_id back to clients so they can include it in messages

@@ -112,6 +112,7 @@ func (m Model) View() string {
 }
 
 func (m Model) StartNewChatRoom() (tea.Model, tea.Cmd) {
+	// TODO: figure out how to get this method to run immediately after the page transition
 	m.Context.SetShouldStartNewChatRoom(false)
 	m.streamContext = ctx.Background()
 	joinChatRequest := &chatpb.JoinChatRequest{
@@ -120,10 +121,13 @@ func (m Model) StartNewChatRoom() (tea.Model, tea.Cmd) {
 		ChannelName: m.Context.GetChannelName(),
 	}
 
+	m.messages = append(m.messages, "Joining chat room...")
 	stream, err := m.Context.GetChatRoomClient().JoinChatRoom(m.streamContext, joinChatRequest)
 	if err != nil {
 		m.err = err
 		return m, nil
+	} else {
+		m.messages = append(m.messages, "Joined chat room")
 	}
 
 	// Spawn a new goroutine that listens for messages & appends them to the messages slice
