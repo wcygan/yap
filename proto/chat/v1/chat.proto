@@ -4,73 +4,91 @@ import "google/protobuf/empty.proto";
 
 package chat;
 
-// A service for client streaming chat messages
-service ClientStreamingService {
-  // A client stream for sending and receiving chat messages
-  rpc ChatStream (stream ChatPacket) returns (stream ChatPacket) {}
+// ChatRoomService provides functionality for users to join chat rooms and receive messages.
+service ChatRoomService {
+  // JoinChatRoom allows a user to join a chat room.
+  rpc JoinChatRoom (JoinChatRequest) returns (stream Packet) {}
 }
 
-// A service for creating and finding chat channels
-service ChannelService {
-  // Create or find a chat channel
-  rpc FindOrCreateChannel (CreateChannelRequest) returns (CreateChannelResponse) {}
+// MessagingService provides functionality for sending messages within the chat system.
+service MessagingService {
+  // SendMessage sends a chat message to a specific channel.
+  rpc SendMessage (ChatMessage) returns (google.protobuf.Empty) {}
 }
 
-// A service for persisting chat messages
-service MessagePersistenceService {
-  // Submit a chat message to be persisted
-  rpc PersistChatMessage (MessageToPersist) returns (google.protobuf.Empty) {}
+// JoinChatRequest represents the request to join a chat room.
+message JoinChatRequest {
+  // The name of the user joining the chat room.
+  string user_name = 1;
+
+  // The unique identifier of the user joining the chat room.
+  string user_id = 2;
+
+  // The name of the channel the user wants to join.
+  string channel_name = 3;
 }
 
-// User-facing packet that can be streamed over the wire
-message ChatPacket {
-  oneof packet_type {
-    // A request to join a chat room
-    JoinChatRequest join_request = 1;
-    // A chat message
-    ChatMessage chat_message = 2;
+// Packet represents an update sent to the client.
+message Packet {
+  // The content of the packet.
+  oneof Contents {
+    // A chat message.
+    ChatMessage message = 1;
+
+    // A user joined message.
+    UserJoinedMessage user_joined = 2;
+
+    // A user left message.
+    UserLeftMessage user_left = 3;
   }
 }
 
-// A request to join a chat room
-message JoinChatRequest {
-  // The user's unique identifier
-  string user_id = 1;
-  // The name of the chat room to join
-  string channel_name = 2;
-}
-
-// A chat message
+// ChatMessage represents a message in the chat system.
 message ChatMessage {
-  // The user's unique identifier
-  string user_id = 1;
-  // The message content
-  string message = 2;
-  // The timestamp of the message
-  int64 timestamp = 3;
+  // The content of the message.
+  string message = 1;
+
+  // A unique identifier for the message.
+  string message_id = 2;
+
+  // The unique identifier of the channel where the message is sent.
+  string channel_id = 3;
+
+  // The unique identifier of the user who sent the message.
+  string user_id = 4;
+
+  // The name of the user who sent the message.
+  string user_name = 5;
+
+  // The timestamp when the message was sent, in milliseconds since epoch.
+  int64 timestamp = 6;
 }
 
-// A message that will be persisted for a specific chat room
-message MessageToPersist {
+// UserJoinedMessage is a message that indicates a user has joined a channel.
+message UserJoinedMessage {
+  // The unique identifier of the channel where the user joined.
   string channel_id = 1;
-  // The user's unique identifier
+
+  // The unique identifier of the user who joined.
   string user_id = 2;
-  // The message content
-  string message = 3;
-  // The timestamp of the message
+
+  // The name of the user who joined.
+  string user_name = 3;
+
+  // The timestamp when the user joined, in milliseconds since epoch.
   int64 timestamp = 4;
 }
 
-// A request to create a chat channel
-message CreateChannelRequest {
-  // The name of the chat channel
-  string channel_name = 1;
-}
+message UserLeftMessage {
+  // The unique identifier of the channel where the user left.
+  string channel_id = 1;
 
-// A response to a request to create a chat channel
-message CreateChannelResponse {
-  // The name of the chat channel
-  string channel_name = 1;
-  // The unique identifier of the chat channel
-  string channel_id = 2;
+  // The unique identifier of the user who left.
+  string user_id = 2;
+
+  // The name of the user who left.
+  string user_name = 3;
+
+  // The timestamp when the user left, in milliseconds since epoch.
+  int64 timestamp = 4;
 }
