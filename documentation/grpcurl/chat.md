@@ -1,5 +1,7 @@
 # gRPC references for the chat endpoints
 
+// TODO: update these with the new endpoints
+
 ## Persist Chat Message
 
 ```

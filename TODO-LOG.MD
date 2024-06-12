@@ -1,5 +1,6 @@
 --- 06/11/24
 
+- update [chat.md](documentation/grpcurl/chat.md) with the new endpoints
 - [chat-service] make sure that the role configs are applied before the chat-service starts to prevent hangup
 - [auth-db] need to update postgres to use both user_id and user_name in schema
 - [auth-service] update auth-service to send the user_id back to clients so they can include it in messages

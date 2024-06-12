@@ -28,6 +28,8 @@ func (s *ChatRoomService) JoinChatRoom(req *chat.JoinChatRequest, stream chat.Ch
 	if err != nil {
 		log.Printf("Error sending message: %v", err)
 		return err
+	} else {
+		log.Printf("Sent user joined message: %v", temp)
 	}
 
 	// TODO: add Pulsar consumer connection to receive messages from the chat room topic
