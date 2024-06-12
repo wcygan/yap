@@ -141,10 +141,10 @@ func (m Model) StartNewChatRoom() (tea.Model, tea.Cmd) {
 				msg := fmt.Sprintf("[%s] %s", contents.Message.UserName, contents.Message.Message)
 				m.messages = append(m.messages, msg)
 			case *chatpb.Packet_UserJoined:
-				msg := fmt.Sprintf("%s joined the chat room", contents.UserJoined.UserName)
+				msg := fmt.Sprintf(">>> %s joined the chat room <<<", contents.UserJoined.UserName)
 				m.messages = append(m.messages, msg)
 			case *chatpb.Packet_UserLeft:
-				msg := fmt.Sprintf("%s left the chat room", contents.UserLeft.UserName)
+				msg := fmt.Sprintf("<<< %s left the chat room >>>", contents.UserLeft.UserName)
 				m.messages = append(m.messages, msg)
 			default:
 				fmt.Println("Unknown packet contents")
