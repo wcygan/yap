@@ -11,10 +11,11 @@ import (
 )
 
 func main() {
-	_, err := storage.NewStorage("chat-db")
+	storage, err := storage.NewStorage("chat-db")
 	if err != nil {
 		log.Fatalf("failed to create storage: %v", err)
 	}
+	defer storage.Close()
 
 	s := grpc.NewServer()
 	reflection.Register(s)

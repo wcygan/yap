@@ -11,19 +11,21 @@ import (
 
 // Context contains the shared state of the application
 type Context struct {
-	sync.RWMutex                                               // The context is shared, so we need to protect it
-	host                   string                              // The host server address
-	loginInformation       *LoginInformation                   // The user's login information
-	currentPage            Page                                // The current page the user is on
-	channelName            string                              // The name of the chat channel
-	shouldStartNewChatRoom bool                                // a flag to determine if we should start a new chat room
-	auth                   authpb.AuthServiceClient            // The authentication service client
-	chat                   chatpb.ClientStreamingServiceClient // The chat service client
+	sync.RWMutex                                         // The context is shared, so we need to protect it
+	host                   string                        // The host server address
+	loginInformation       *LoginInformation             // The user's login information
+	currentPage            Page                          // The current page the user is on
+	channelName            string                        // The name of the chat channel
+	shouldStartNewChatRoom bool                          // a flag to determine if we should start a new chat room
+	authServiceClient      authpb.AuthServiceClient      // The authentication service client
+	roomServiceClient      chatpb.ChatRoomServiceClient  // The chat room service client
+	messagingServiceClient chatpb.MessagingServiceClient // The messaging service client
 }
 
 // LoginInformation contains information for the authentication lifecycle
 type LoginInformation struct {
 	Username     string // The user's username
+	UserId       string // The user's unique identifier
 	AccessToken  string // The token which authenticates the user's requests
 	RefreshToken string // The token which refreshes the access token as needed
 }
@@ -42,15 +44,18 @@ func InitialContext(host string) (*Context, error) {
 		log.Fatalf("Failed to connect to gRPC server: %v", err)
 	}
 
-	auth := authpb.NewAuthServiceClient(conn)
-	chat := chatpb.NewClientStreamingServiceClient(conn)
+	authServiceClient := authpb.NewAuthServiceClient(conn)
+	roomServiceClient := chatpb.NewChatRoomServiceClient(conn)
+	messagingServiceClient := chatpb.NewMessagingServiceClient(conn)
 
 	return &Context{
-		host:             host,      // Set the host server address for gRPC communication
-		loginInformation: nil,       // No login information to start; the user must log in
-		currentPage:      LoginPage, // Start on the login page
-		auth:             auth,
-		chat:             chat,
+		host:                   host,                   // Set the host server address for gRPC communication
+		loginInformation:       nil,                    // No login information to start; the user must log in
+		currentPage:            LoginPage,              // Start on the login page
+		channelName:            "",                     // No channel name to start
+		authServiceClient:      authServiceClient,      // Set the authentication service client
+		roomServiceClient:      roomServiceClient,      // Set the chat room service client
+		messagingServiceClient: messagingServiceClient, // Set the messaging service client
 	}, nil
 }
 
@@ -106,13 +111,19 @@ func (c *Context) Logout() {
 func (c *Context) GetAuthClient() authpb.AuthServiceClient {
 	c.RLock()
 	defer c.RUnlock()
-	return c.auth
+	return c.authServiceClient
 }
 
-func (c *Context) GetChatClient() chatpb.ClientStreamingServiceClient {
+func (c *Context) GetChatRoomClient() chatpb.ChatRoomServiceClient {
 	c.RLock()
 	defer c.RUnlock()
-	return c.chat
+	return c.roomServiceClient
+}
+
+func (c *Context) GetMessagingClient() chatpb.MessagingServiceClient {
+	c.RLock()
+	defer c.RUnlock()
+	return c.messagingServiceClient
 }
 
 func (c *Context) SetShouldStartNewChatRoom(shouldStartNewChatRoom bool) {

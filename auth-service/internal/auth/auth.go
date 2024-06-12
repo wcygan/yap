@@ -47,6 +47,8 @@ func (s *AuthService) Register(ctx context.Context, req *auth.RegisterRequest) (
 	return &auth.RegisterResponse{
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
+		// TODO: Return the user ID
+		UserId: "123",
 	}, nil
 }
 
@@ -77,6 +79,8 @@ func (s *AuthService) Login(ctx context.Context, req *auth.LoginRequest) (*auth.
 	return &auth.LoginResponse{
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
+		// TODO: Return the user ID
+		UserId: "123",
 	}, nil
 }
 

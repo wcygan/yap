@@ -24,8 +24,7 @@ type Model struct {
 	senderStyle   lipgloss.Style
 	err           error
 	homeButton    string
-	stream        chatpb.ClientStreamingService_ChatStreamClient // the stream which we will use to send and receive messages
-	streamContext ctx.Context                                    // the context for the stream
+	streamContext ctx.Context
 }
 
 type StartNewChatRoomMsg struct{}
@@ -60,7 +59,6 @@ Type a message and press Enter to send.`)
 		senderStyle: lipgloss.NewStyle().Foreground(lipgloss.Color("5")),
 		err:         nil,
 		homeButton:  "[ Homepage ]",
-		stream:      nil,
 	}
 }
 
@@ -117,35 +115,56 @@ func (m Model) StartNewChatRoom() (tea.Model, tea.Cmd) {
 	m.Context.SetShouldStartNewChatRoom(false)
 	m.streamContext = ctx.Background()
 	joinChatRequest := &chatpb.JoinChatRequest{
+		UserId:      m.Context.GetLoginInformation().UserId,
+		UserName:    m.Context.GetLoginInformation().Username,
 		ChannelName: m.Context.GetChannelName(),
 	}
 
-	stream, err := m.Context.GetChatClient().ChatStream(m.streamContext)
+	stream, err := m.Context.GetChatRoomClient().JoinChatRoom(m.streamContext, joinChatRequest)
 	if err != nil {
 		m.err = err
 		return m, nil
 	}
 
-	// Create a ChatPacket with the JoinChatRequest
-	chatPacket := &chatpb.ChatPacket{
-		PacketType: &chatpb.ChatPacket_JoinRequest{
-			JoinRequest: joinChatRequest,
-		},
-	}
-	err = stream.Send(chatPacket)
-	// --- TODO: MOVE THIS CODE INTO CHAT ROOM
-	// Do things like cancel the current context,
-	// start a new context
-	// start a new chat stream & update the model's send end
-	// spawn a new goroutine that listens for messages & appends them to the messages slice
+	// Spawn a new goroutine that listens for messages & appends them to the messages slice
+	go func() {
+		for {
+			in, err := stream.Recv()
+			if err != nil {
+				m.err = err
+				return
+			}
+
+			switch contents := in.Contents.(type) {
+			case *chatpb.Packet_Message:
+				// TODO: Add pretty colorful messages based on the sender
+				msg := fmt.Sprintf("[%s] %s", contents.Message.UserName, contents.Message.Message)
+				m.messages = append(m.messages, msg)
+			case *chatpb.Packet_UserJoined:
+				msg := fmt.Sprintf("%s joined the chat room", contents.UserJoined.UserName)
+				m.messages = append(m.messages, msg)
+			case *chatpb.Packet_UserLeft:
+				msg := fmt.Sprintf("%s left the chat room", contents.UserLeft.UserName)
+				m.messages = append(m.messages, msg)
+			default:
+				fmt.Println("Unknown packet contents")
+			}
+		}
+	}()
+
 	return m, nil
 }
 
 func (m Model) StopCurrentChatRoom() {
-	// Do things like cancel the current context
-	// stop the current chat stream
-	// close the send end
+	// Leave the chat room
 	m.Context.SetChannelName("")
+
+	// Go back to the home page
 	m.Context.SetCurrentPage(context.HomePage)
+
+	// Close the stream
 	m.streamContext.Done()
+
+	// Clear the messages
+	m.messages = []string{}
 }

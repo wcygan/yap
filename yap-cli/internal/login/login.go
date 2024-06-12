@@ -116,6 +116,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				} else {
 					loginInfo := &context.LoginInformation{
 						Username:     m.usernameInput().Value(),
+						UserId:       loginResponse.UserId,
 						AccessToken:  loginResponse.AccessToken,
 						RefreshToken: loginResponse.RefreshToken,
 					}
@@ -143,6 +144,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				} else {
 					loginInfo := &context.LoginInformation{
 						Username:     m.usernameInput().Value(),
+						UserId:       registerResponse.UserId,
 						AccessToken:  registerResponse.AccessToken,
 						RefreshToken: registerResponse.RefreshToken,
 					}
