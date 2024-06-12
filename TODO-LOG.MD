@@ -1,15 +1,19 @@
 --- 06/11/24
 
-- need to update postgres to use both user_id and user_name
-- update auth-service to send the user_id back to clients so they can include it in messages
-- need to send "user joined" event to clients and include their user_id to color their messages
+- [chat-service] make sure that the role configs are applied before the chat-service starts to prevent hangup
+- [auth-db] need to update postgres to use both user_id and user_name in schema
+- [auth-service] update auth-service to send the user_id back to clients so they can include it in messages
+- [yap-api] need to send "user joined" event to clients and include their user_id to color their messages
+- [general] figure out how to connect to scylladb from intellij using superuser 'cassandra'
+- [yap-cli] add a persistent log for file yap-cli so that it can be leveraged for debugging
+- [yap-cli] figure out why you need to press ctrl+h twice before 
 
 --- New ideas from 06/10/24:
 
-- figure out how to solve the "in-memory broadcast" problem (single producer, multiple consumers) via https://dev.to/karanpratapsingh/embedding-nats-in-go-19o. see https://www.reddit.com/r/golang/comments/14r5q62/in_memory_message_broker_any_recommendations/ or https://watermill.io/ or https://dev.to/karanpratapsingh/embedding-nats-in-go-19o or https://www.reddit.com/r/golang/comments/1bk6n74/single_producer_continuously_notify_multiple/
-- maybe just use a single-direction server streaming RPC to receive all chat messages. see https://grpc.io/docs/what-is-grpc/core-concepts/#server-streaming-rpc. this will take a join server request and return a stream of messages.
-- then use a separate server non-streaming RPC to send every new chat message
-- join channel request from client
+- [yap-api] figure out how to solve the "in-memory broadcast" problem (single producer, multiple consumers) via https://dev.to/karanpratapsingh/embedding-nats-in-go-19o. see https://www.reddit.com/r/golang/comments/14r5q62/in_memory_message_broker_any_recommendations/ or https://watermill.io/ or https://dev.to/karanpratapsingh/embedding-nats-in-go-19o or https://www.reddit.com/r/golang/comments/1bk6n74/single_producer_continuously_notify_multiple/
+- [yap-api] maybe just use a single-direction server streaming RPC to receive all chat messages. see https://grpc.io/docs/what-is-grpc/core-concepts/#server-streaming-rpc. this will take a join server request and return a stream of messages.
+- [chat-service] then use a separate server non-streaming RPC to send every new chat message
+- [yap-cli] join channel request from client
 
 Rationale:
 
