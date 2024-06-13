@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
 import './App.css';
-
 import { authClient } from './clients';
 
 function App() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleLogin = async () => {
     try {
       const response = await authClient.login({ username, password });
       console.log('Login successful:', response);
@@ -17,8 +15,7 @@ function App() {
     }
   };
 
-  const handleCreateAccount = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleCreateAccount = async () => {
     try {
       const response = await authClient.register({ username, password });
       console.log('Account creation successful:', response);
@@ -30,16 +27,12 @@ function App() {
   return (
     <div>
       <div className="login-form">
-        <form onSubmit={handleLogin}>
-          <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Username" />
-          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" />
-          <button type="submit">Login</button>
-        </form>
-        <form onSubmit={handleCreateAccount}>
-          <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Username" />
-          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" />
-          <button type="submit">Create Account</button>
-        </form>
+        <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Username" />
+        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" />
+        <div className="button-row">
+          <button onClick={handleLogin}>Login</button>
+          <button onClick={handleCreateAccount}>Create Account</button>
+        </div>
       </div>
     </div>
   );
