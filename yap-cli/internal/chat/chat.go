@@ -9,6 +9,7 @@ import (
 	chatpb "github.com/wcygan/yap/generated/go/chat/v1"
 	"github.com/wcygan/yap/yap-cli/internal/context"
 	ctx "golang.org/x/net/context"
+	"log"
 	"strings"
 )
 
@@ -68,8 +69,6 @@ func (m Model) Init() tea.Cmd {
 
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	if m.ShouldStartNewChatRoom() {
-		// Need to figure out how to this code run immediately after the page transition
-		m.messages = append(m.messages, "Starting new chat room...")
 		return m.StartNewChatRoom()
 	}
 
@@ -112,7 +111,6 @@ func (m Model) View() string {
 }
 
 func (m Model) StartNewChatRoom() (tea.Model, tea.Cmd) {
-	// TODO: figure out how to get this method to run immediately after the page transition
 	m.Context.SetShouldStartNewChatRoom(false)
 	m.streamContext = ctx.Background()
 	joinChatRequest := &chatpb.JoinChatRequest{
@@ -121,13 +119,10 @@ func (m Model) StartNewChatRoom() (tea.Model, tea.Cmd) {
 		ChannelName: m.Context.GetChannelName(),
 	}
 
-	m.messages = append(m.messages, "Joining chat room...")
 	stream, err := m.Context.GetChatRoomClient().JoinChatRoom(m.streamContext, joinChatRequest)
 	if err != nil {
 		m.err = err
 		return m, nil
-	} else {
-		m.messages = append(m.messages, "Joined chat room")
 	}
 
 	// Spawn a new goroutine that listens for messages & appends them to the messages slice
@@ -135,6 +130,7 @@ func (m Model) StartNewChatRoom() (tea.Model, tea.Cmd) {
 		for {
 			in, err := stream.Recv()
 			if err != nil {
+				log.Printf("Error receiving message: %v", err)
 				m.err = err
 				return
 			}
@@ -153,6 +149,8 @@ func (m Model) StartNewChatRoom() (tea.Model, tea.Cmd) {
 			default:
 				fmt.Println("Unknown packet contents")
 			}
+
+			m.viewport.SetContent(strings.Join(m.messages, "\n"))
 		}
 	}()
 

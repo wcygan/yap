@@ -1,3 +1,7 @@
+--- 06/12/24
+
+- [yap-cli] breakthrough: https://github.com/charmbracelet/bubbletea/issues/25
+
 --- 06/11/24
 
 - [yap-cli] maybe you need to re-evaluate how you've setup the MVP for yap-cli... possibly the application context can hold state related to the chat room... problem is that `StartNewChatRoom` doesn't get called upon page transition. it occurs only after the first update (keystroke) in [chat.go](yap-cli/internal/chat/chat.go)
