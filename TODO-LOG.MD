@@ -9,6 +9,10 @@ and spin up a web client instead so I can unblock myself from working on the mea
 
 - [yap-cli] breakthrough: https://github.com/charmbracelet/bubbletea/issues/25 -- this is how to wait for I/O
 - [yap-web] maybe you can make a "most popular chats" feature that shows the most active chat rooms & gives an option to join them
+- [yap-web] you still can't connect to yap-api from yap-web yet... maybe `exec` into the yap-web pod & fish around trying to debug the connectivity. `nc -zv yap-api 50050` seems to work... -- maybe you can github search for other examples of `"createConnectTransport({"` and try to find one that leverages k8s
+  - https://github.com/jellydn/grpc-demo-monorepo/blob/0f8586db14b8ff8032e806dba5381db6ddb121f5/apps/web/components/HelloConnectApp.tsx#L14
+  - https://connectrpc.com/docs/web/choosing-a-protocol#grpc-web
+  - https://www.envoyproxy.io/
 
 --- 06/11/24
 
