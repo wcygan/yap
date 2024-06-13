@@ -140,7 +140,7 @@ requires:
       - yap-api
 manifests:
   rawYaml:
-    - k8s/envoy.yaml
+    - envoy/envoy.yaml
 deploy:
   kubectl: {}
 ---
