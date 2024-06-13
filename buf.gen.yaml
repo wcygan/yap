@@ -11,3 +11,7 @@ plugins:
   - plugin: buf.build/protocolbuffers/go
     out: generated/go
     opt: paths=source_relative
+  - plugin: buf.build/protocolbuffers/js
+    out: generated/js
+    opt:
+      - import_style=commonjs
