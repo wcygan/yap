@@ -7,7 +7,8 @@ It's so close!
 But I can't get over the hump at this moment & I don't want to stay stuck here. I'm going to take a break from it
 and spin up a web client instead so I can unblock myself from working on the meaty parts of the project.
 
-- [yap-cli] breakthrough: https://github.com/charmbracelet/bubbletea/issues/25
+- [yap-cli] breakthrough: https://github.com/charmbracelet/bubbletea/issues/25 -- this is how to wait for I/O
+- [yap-web] maybe you can make a "most popular chats" feature that shows the most active chat rooms & gives an option to join them
 
 --- 06/11/24
 
