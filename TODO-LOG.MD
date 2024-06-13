@@ -13,6 +13,7 @@ and spin up a web client instead so I can unblock myself from working on the mea
   - https://github.com/jellydn/grpc-demo-monorepo/blob/0f8586db14b8ff8032e806dba5381db6ddb121f5/apps/web/components/HelloConnectApp.tsx#L14
   - https://connectrpc.com/docs/web/choosing-a-protocol#grpc-web
   - https://www.envoyproxy.io/
+- [envoy] you might need to setup a simple envoy on k8s example to demonstrate how to fwd grpc-web requests
 
 --- 06/11/24
 

@@ -13,6 +13,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: yap-web
+                name: envoy
                 port:
-                  number: 80
+                  number: 8080

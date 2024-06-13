@@ -134,11 +134,25 @@ portForward:
 apiVersion: skaffold/v4beta9
 kind: Config
 metadata:
+  name: envoy
+requires:
+  - configs:
+      - yap-api
+manifests:
+  rawYaml:
+    - k8s/envoy.yaml
+deploy:
+  kubectl: {}
+---
+apiVersion: skaffold/v4beta9
+kind: Config
+metadata:
   name: yap-web
 requires:
   - configs:
       - yap-api
       - roles
+      - envoy
 manifests:
   rawYaml:
     - yap-web/k8s/deployment.yaml

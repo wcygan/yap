@@ -4,11 +4,11 @@ import {ChatRoomService, MessagingService} from "./generated/chat/v1/chat_connec
 import {AuthService} from "./generated/auth/v1/auth_connectweb";
 
 const grpcWebTransport = createGrpcWebTransport({
-    baseUrl: "http://yap-api:50050",
+    baseUrl: "http://envoy:8080",
 });
 
 const connectTransport = createConnectTransport({
-    baseUrl: "http://yap-api:50050",
+    baseUrl: "http://envoy:8080",
 });
 
 const messagingClient = createPromiseClient(MessagingService, grpcWebTransport);
