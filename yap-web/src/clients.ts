@@ -4,7 +4,7 @@ import {ChatRoomService, MessagingService} from "./generated/chat/v1/chat_connec
 import {AuthService} from "./generated/auth/v1/auth_connectweb";
 
 const transport = createConnectTransport({
-  baseUrl: "https://localhost:50050",
+  baseUrl: "http://yap-api:50050",
 });
 
 const messagingClient = createPromiseClient(MessagingService, transport);

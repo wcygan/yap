@@ -7,6 +7,7 @@ import (
 	"github.com/google/uuid"
 	_ "github.com/lib/pq"
 	auth "github.com/wcygan/yap/generated/go/auth/v1"
+	"log"
 	"time"
 )
 
@@ -28,6 +29,8 @@ func NewAuthService(connStr string) (*AuthService, error) {
 }
 
 func (s *AuthService) Register(ctx context.Context, req *auth.RegisterRequest) (*auth.RegisterResponse, error) {
+	log.Printf("Registering user: %v", req.Username)
+
 	// Insert user into the users table
 	_, err := s.db.ExecContext(ctx, "INSERT INTO users(username, password) VALUES($1, $2)", req.Username, req.Password)
 	if err != nil {
@@ -53,6 +56,8 @@ func (s *AuthService) Register(ctx context.Context, req *auth.RegisterRequest) (
 }
 
 func (s *AuthService) Login(ctx context.Context, req *auth.LoginRequest) (*auth.LoginResponse, error) {
+	log.Printf("Logging in user: %v", req.Username)
+
 	// Retrieve user from the users table
 	var userID int64
 	var password string

@@ -46,10 +46,12 @@ func NewAuthService() *AuthService {
 }
 
 func (s *AuthService) Register(ctx context.Context, req *auth.RegisterRequest) (*auth.RegisterResponse, error) {
+	log.Printf("Registering user: %v", req.Username)
 	return authClient.Register(ctx, req)
 }
 
 func (s *AuthService) Login(ctx context.Context, req *auth.LoginRequest) (*auth.LoginResponse, error) {
+	log.Printf("Logging in user: %v", req.Username)
 	return authClient.Login(ctx, req)
 }
 

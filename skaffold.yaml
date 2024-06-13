@@ -130,3 +130,32 @@ portForward:
     resourceName: yap-api
     port: 50050
     localPort: 50050
+---
+apiVersion: skaffold/v4beta9
+kind: Config
+metadata:
+  name: yap-web
+requires:
+  - configs:
+      - yap-api
+      - roles
+manifests:
+  rawYaml:
+    - yap-web/k8s/deployment.yaml
+    - yap-web/k8s/service.yaml
+    - yap-web/k8s/ingress.yaml
+build:
+  local:
+    concurrency: 0
+  artifacts:
+    - image: yap-web
+      context: .
+      docker:
+        dockerfile: yap-web/Dockerfile
+deploy:
+  kubectl: {}
+portForward:
+  - resourceType: service
+    resourceName: yap-web
+    port: 80
+    localPort: 8080
