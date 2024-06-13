@@ -1,5 +1,12 @@
 --- 06/12/24
 
+Overall, I'm kind of tired of trying to make the CLI work...
+
+It's so close!
+
+But I can't get over the hump at this moment & I don't want to stay stuck here. I'm going to take a break from it
+and spin up a web client instead so I can unblock myself from working on the meaty parts of the project.
+
 - [yap-cli] breakthrough: https://github.com/charmbracelet/bubbletea/issues/25
 
 --- 06/11/24
