@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import logo from './logo.svg';
 import './App.css';
 
-import client from './connectClient';
+import { authClient } from './clients';
 
 function App() {
   const [username, setUsername] = useState('');
@@ -10,12 +9,22 @@ function App() {
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Call gRPC service for login
+    try {
+      const response = await authClient.login({ username, password });
+      console.log('Login successful:', response);
+    } catch (error) {
+      console.error('Login failed:', error);
+    }
   };
 
   const handleCreateAccount = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Call gRPC service for account creation
+    try {
+      const response = await authClient.register({ username, password });
+      console.log('Account creation successful:', response);
+    } catch (error) {
+      console.error('Account creation failed:', error);
+    }
   };
 
   return (

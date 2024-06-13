@@ -8,12 +8,15 @@ plugins:
     out: generated/go
     opt:
       - paths=source_relative
-  - plugin: buf.build/protocolbuffers/go
+  - plugin: buf.build/protocolbuffers/go:v1.34.2
     out: generated/go
     opt: paths=source_relative
-  - plugin: buf.build/bufbuild/es
+  - plugin: buf.build/bufbuild/es:v1.10.0
+    out: yap-web/src/generated
+    opt: target=js
+  - plugin: buf.build/bufbuild/es:v1.10.0
     out: yap-web/src/generated
     opt: target=ts
-  - plugin: buf.build/bufbuild/connect-web
+  - plugin: buf.build/bufbuild/connect-web:v0.8.6
     out: yap-web/src/generated
     opt: target=ts
