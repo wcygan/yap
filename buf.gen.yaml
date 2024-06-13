@@ -11,7 +11,9 @@ plugins:
   - plugin: buf.build/protocolbuffers/go
     out: generated/go
     opt: paths=source_relative
-  - plugin: buf.build/protocolbuffers/js
-    out: generated/js
-    opt:
-      - import_style=commonjs
+  - plugin: buf.build/bufbuild/es
+    out: yap-web/src/generated
+    opt: target=ts
+  - plugin: buf.build/bufbuild/connect-web
+    out: yap-web/src/generated
+    opt: target=ts
