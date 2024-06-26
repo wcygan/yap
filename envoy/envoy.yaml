@@ -70,6 +70,7 @@ data:
         - name: yap_api
           connect_timeout: 0.25s
           type: LOGICAL_DNS
+          http2_protocol_options: {}
           lb_policy: ROUND_ROBIN
           load_assignment:
             cluster_name: yap_api
