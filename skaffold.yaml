@@ -143,6 +143,11 @@ manifests:
     - envoy/envoy.yaml
 deploy:
   kubectl: {}
+portForward:
+  - resourceType: service
+    resourceName: envoy
+    port: 8080
+    localPort: 8080
 ---
 apiVersion: skaffold/v4beta9
 kind: Config
@@ -172,4 +177,4 @@ portForward:
   - resourceType: service
     resourceName: yap-web
     port: 80
-    localPort: 8080
+    localPort: 80
