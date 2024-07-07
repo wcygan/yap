@@ -14,7 +14,7 @@ spec:
     spec:
       initContainers:
         - name: wait-for-chat-db
-          image: bitnami/kubectl:latest
+          image: bitnami/kubectl:1.30.2
           command:
             - /bin/sh
             - -c

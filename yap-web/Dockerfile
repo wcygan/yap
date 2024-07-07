@@ -1,5 +1,5 @@
 # First stage: Build the Protobuf files using Buf
-FROM bufbuild/buf:latest as bufbuild
+FROM bufbuild/buf:1.34.0 as bufbuild
 WORKDIR /app
 COPY buf.gen.yaml ./
 COPY proto ./proto

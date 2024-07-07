@@ -1,5 +1,5 @@
 # First stage: Build the Protobuf files using Buf
-FROM bufbuild/buf:latest as bufbuild
+FROM bufbuild/buf:1.34.0 as bufbuild
 WORKDIR /app
 COPY buf.gen.yaml ./
 COPY generated ./generated
@@ -34,7 +34,7 @@ COPY yap-api/ ./
 RUN CGO_ENABLED=0 GOOS=linux go build -o ../build/yap-api cmd/main.go
 
 # Final stage: Create the runtime image
-FROM alpine:latest
+FROM alpine:3.20.1
 RUN apk --no-cache add ca-certificates
 WORKDIR /app
 
