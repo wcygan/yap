@@ -1,4 +1,4 @@
-package storage
+package persistence
 
 import (
 	"log"
@@ -23,10 +23,10 @@ func NewStorage(hosts ...string) (*Storage, error) {
 	return &Storage{session: session}, nil
 }
 
-func (s *Storage) SaveMessage(channelId gocql.UUID, userID gocql.UUID, content string, timestamp time.Time) error {
+func (s *Storage) SaveMessage(channelName string, userID gocql.UUID, content string, timestamp time.Time) error {
 	messageId := gocql.TimeUUID()
-	query := "INSERT INTO chat.messages (channel_id, id, user_id, content, created_at) VALUES (?, ?, ?, ?, ?)"
-	return s.session.Query(query, channelId, messageId, userID, content, timestamp).Exec()
+	query := "INSERT INTO chat.messages (channel_name, id, user_id, content, created_at) VALUES (?, ?, ?, ?, ?)"
+	return s.session.Query(query, channelName, messageId, userID, content, timestamp).Exec()
 }
 
 func (s *Storage) GetMessages(channelId string, limit int) ([]map[string]interface{}, error) {

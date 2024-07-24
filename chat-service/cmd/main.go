@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/wcygan/yap/chat-service/internal/chat"
-	"github.com/wcygan/yap/chat-service/internal/storage"
+	"github.com/wcygan/yap/chat-service/internal/persistence"
 	chatpb "github.com/wcygan/yap/generated/go/chat/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	storage, err := storage.NewStorage("chat-db")
+	storage, err := persistence.NewStorage("chat-db")
 	if err != nil {
 		log.Fatalf("failed to create storage: %v", err)
 	}
@@ -22,7 +22,7 @@ func main() {
 	log.Printf("reflection is enabled")
 
 	// Register the messaging service
-	chatpb.RegisterMessagingServiceServer(s, chat.NewMessagingService())
+	chatpb.RegisterMessagingServiceServer(s, chat.NewMessagingService(storage))
 	log.Printf("messaging service is registered")
 
 	lis, err := net.Listen("tcp", ":50052")

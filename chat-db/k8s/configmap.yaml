@@ -9,12 +9,12 @@ data:
         
     CREATE TABLE IF NOT EXISTS chat.messages
     (
-        channel_id uuid,
+        channel_name text,
         id timeuuid,
         user_id  uuid,
         content    text,
         created_at  timestamp,
-        PRIMARY KEY (channel_id, id)
+        PRIMARY KEY (channel_name, id)
     ) WITH CLUSTERING ORDER BY (id DESC);
     
     CREATE TABLE IF NOT EXISTS chat.channels
